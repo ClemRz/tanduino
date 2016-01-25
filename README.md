@@ -1,2 +1,2 @@
 # tanduino
-Tanduino is an Arduino based project to replace the analog "tandem" inclinometer + compass with a digital one.
+Tanduino is an Arduino based project aimed to replace the analog "tandem" inclinometer + compass with a digital one.
