@@ -29,16 +29,6 @@
 #define HOUR                  (unsigned int) 60L*MINUTE
 #define DAY                   (unsigned long) 24L*HOUR
 
-// Fonts
-#define FREE_SANS_9PT         FreeSans9pt7b
-#define FREE_SANS_12PT        FreeSans12pt7b
-#define FREE_SANS_18PT        FreeSans18pt7b
-#define FREE_SANS_24PT        FreeSans24pt7b
-#define FREE_SANS_BOLD_9PT    FreeSansBold9pt7b
-#define FREE_SANS_BOLD_12PT   FreeSansBold12pt7b
-#define FREE_SANS_BOLD_18PT   FreeSansBold18pt7b
-#define FREE_SANS_BOLD_24PT   FreeSansBold24pt7b
-
 // Pins
 #define PCD8544_DC_PIN        8               // LCD Data/Command select
 #define PCD8544_RST_PIN       9               // LCD Reset
@@ -54,18 +44,20 @@
 #define PCD8544_CONTRAST      0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
 #define PCD8544_BIAS          0x13            // LCD Bias mode for MUX rate (0x10 to 0x17) (optimum: 0x13, 1:48)
 #define PCD8544_SPI_CLOCK_DIV SPI_CLOCK_DIV2  // Max SPI clock speed for PCD8544 of 2mhz (8mhz / 4)
-#define PCD8544_FONT          FREE_SANS_9PT   // LCD font
+#define PCD8544_FONT          FreeSans9pt7b   // LCD font
 #define FONT_PATH             "Fonts/FreeSans9pt7b.h" // See Fonts folder in Adafruit_GFX library
 #include FONT_PATH
 
 // Unit-specific configurations
 #define REVISION_NR           F("1.0")        // Revision # of this sketch
 #define READ_SAMPLES          8               // Number of samples to average on
+#define DISPLAY_REFRESH_RATE  0.175*SEC       // how often display is refreshed (seconds)
 
 // Global variables
 Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
 Adafruit_ADXL345_Unified _ADXL345 =   Adafruit_ADXL345_Unified(ADXL345);
 Adafruit_HMC5883_Unified mag =        Adafruit_HMC5883_Unified(HMC5883);
+static unsigned long _timer = -DISPLAY_REFRESH_RATE*MILLISEC;
 
 void setup(void) {
   #if VERBOSE_MODE || WAIT_TO_START
@@ -85,18 +77,21 @@ void setup(void) {
 }
 
 void loop(void) {
-  V v = getAverageReading(ADXL345);
-  float pitch = v.pitch;
-  float roll = v.roll;
-  #if VERBOSE_MODE
-  Serial.println(pitch);
-  Serial.println(roll);
-  #endif  //VERBOSE_MODE
-  v = getAverageReading(HMC5883);
-  float heading = v.heading;
-  #if VERBOSE_MODE
-  Serial.println(heading);
-  #endif  //VERBOSE_MODE
-  setPCD8544(pitch, heading);
-  delay(0.175*SEC*MILLISEC);
+  unsigned long displayRefreshRate = DISPLAY_REFRESH_RATE*MILLISEC;
+  if (millis() - _timer > displayRefreshRate) {
+    V v = getAverageReading(ADXL345);
+    float pitch = v.pitch;
+    float roll = v.roll;
+    #if VERBOSE_MODE
+    Serial.println(pitch);
+    Serial.println(roll);
+    #endif  //VERBOSE_MODE
+    v = getAverageReading(HMC5883);
+    float heading = v.heading;
+    #if VERBOSE_MODE
+    Serial.println(heading);
+    #endif  //VERBOSE_MODE
+    setPCD8544(pitch, heading);
+    _timer = millis();
+  }
 }
