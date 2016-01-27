@@ -1,21 +1,22 @@
 #if VERBOSE_MODE
 
-void display3Da(sensors_vec_t vector) {
-  #if VERBOSE_MODE > 2
+void displayVectorValues(V vector) {
+  #if VERBOSE_MODE //> 2
   Serial.print("X: "); Serial.print(vector.x); Serial.print("  ");
   Serial.print("Y: "); Serial.print(vector.y); Serial.print("  ");
   Serial.print("Z: "); Serial.print(vector.z); Serial.print("  ");
   #endif  //VERBOSE_MODE
-  #if VERBOSE_MODE > 1
-  if (vector.roll != null) {
-    Serial.print("roll: "); Serial.print(vector.roll); Serial.print("  ");Serial.println("deg. ");
+  #if VERBOSE_MODE //> 1
+  if (vector.roll) {
+    Serial.print("roll: "); Serial.print(vector.roll); Serial.print("  ");Serial.print("deg. ");
   }
-  if (vector.pitch != null) {
-    Serial.print("pitch: "); Serial.print(vector.pitch); Serial.print("  ");Serial.println("deg. ");
+  if (vector.pitch) {
+    Serial.print("pitch: "); Serial.print(vector.pitch); Serial.print("  ");Serial.print("deg. ");
   }
-  if (vector.heading != null) {
-    Serial.print("heading: "); Serial.print(vector.heading); Serial.print("  ");Serial.println("deg. ");
+  if (vector.heading) {
+    Serial.print("heading: "); Serial.print(vector.heading); Serial.print("  ");Serial.print("deg. ");
   }
+  Serial.println();
   #endif  //VERBOSE_MODE
 }
 
@@ -48,7 +49,6 @@ void displaySensorDetails(sensor_t sensor) {
 
 void displayADXL345DataRate(void) {
   Serial.print("Data Rate:    "); 
-  
   switch(_ADXL345.getDataRate()) {
     case ADXL345_DATARATE_3200_HZ:
       Serial.print("3200 "); 
@@ -107,7 +107,6 @@ void displayADXL345DataRate(void) {
 
 void displayADXL345Range(void) {
   Serial.print("Range:         +/- "); 
-  
   switch(_ADXL345.getRange()) {
     case ADXL345_RANGE_16_G:
       Serial.print("16 "); 

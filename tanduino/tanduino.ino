@@ -11,15 +11,15 @@
 
 #include <SPI.h>
 #include <Wire.h>
-#include <math.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_ADXL345_U.h>
 #include <Adafruit_HMC5883_U.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
+#include "structures.h"
 
 // Debug options
-#define VERBOSE_MODE          0               // Echo data to serial port: 0: none, 1 basic info, 2 detailed info, 3 extended info
+#define VERBOSE_MODE          1               // Echo data to serial port: 0: none, 1 basic info, 2 detailed info, 3 extended info
 #define WAIT_TO_START         0               // Wait for serial input in setup()
 
 // General
@@ -50,21 +50,22 @@
 
 // Display settings
 #define PCD8544_FLIP          1               // (true, false) flip vertically the display
+#define PCD8544_TEXT_WRAP     1               // (true, false) wrap the text
 #define PCD8544_CONTRAST      0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
 #define PCD8544_BIAS          0x13            // LCD Bias mode for MUX rate (0x10 to 0x17) (optimum: 0x13, 1:48)
 #define PCD8544_SPI_CLOCK_DIV SPI_CLOCK_DIV2  // Max SPI clock speed for PCD8544 of 2mhz (8mhz / 4)
-#define PCD8544_FONT          FREE_SANS_24PT  // LCD font
-#include "Fonts/FreeSans24pt7b.h"             // See Fonts folder in Adafruit_GFX library
-
+#define PCD8544_FONT          FREE_SANS_9PT   // LCD font
+#define FONT_PATH             "Fonts/FreeSans9pt7b.h" // See Fonts folder in Adafruit_GFX library
+#include FONT_PATH
 
 // Unit-specific configurations
 #define REVISION_NR           F("1.0")        // Revision # of this sketch
 #define READ_SAMPLES          8               // Number of samples to average on
 
 // Global variables
-Adafruit_PCD8544 _PCD8544 = Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
-Adafruit_ADXL345_Unified _ADXL345 = Adafruit_ADXL345_Unified(ADXL345);
-Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(HMC5883);
+Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
+Adafruit_ADXL345_Unified _ADXL345 =   Adafruit_ADXL345_Unified(ADXL345);
+Adafruit_HMC5883_Unified mag =        Adafruit_HMC5883_Unified(HMC5883);
 
 void setup(void) {
   #if VERBOSE_MODE || WAIT_TO_START
@@ -84,13 +85,11 @@ void setup(void) {
 }
 
 void loop(void) {
-  sensors_vec_t v = getAverageReading(ADXL345);
+  V v = getAverageReading(ADXL345);
   float pitch = v.pitch;
-  #if VERBOSE_MODE
-  Serial.println(pitch);
-  #endif  //VERBOSE_MODE
   float roll = v.roll;
   #if VERBOSE_MODE
+  Serial.println(pitch);
   Serial.println(roll);
   #endif  //VERBOSE_MODE
   v = getAverageReading(HMC5883);
