@@ -19,7 +19,7 @@
 #include "structures.h"
 
 // Debug options
-#define VERBOSE_MODE          1               // Echo data to serial port: 0: none, 1 basic info, 2 detailed info, 3 extended info
+#define VERBOSE_MODE          0               // Echo data to serial port: 0: none, 1 basic info, 2 detailed info, 3 extended info
 #define WAIT_TO_START         0               // Wait for serial input in setup()
 
 // General
@@ -37,6 +37,7 @@
 // Sensors settings
 #define ADXL345               1               // Accelerometer's ID
 #define HMC5883               2               // Compass's ID
+#define ALPHA                 0.5             // Low Pass Filter constant
 
 // Display settings
 #define PCD8544_FLIP          1               // (true, false) flip vertically the display
@@ -57,7 +58,9 @@
 Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
 Adafruit_ADXL345_Unified _ADXL345 =   Adafruit_ADXL345_Unified(ADXL345);
 Adafruit_HMC5883_Unified mag =        Adafruit_HMC5883_Unified(HMC5883);
-static unsigned long _timer = -DISPLAY_REFRESH_RATE*MILLISEC;
+static unsigned long _timer =         -DISPLAY_REFRESH_RATE*MILLISEC;
+V _y_ADXL345 =                        {0, 0, 0, 0, 0, 0};
+V _y_HMC5883 =                        {0, 0, 0, 0, 0, 0};
 
 void setup(void) {
   #if VERBOSE_MODE || WAIT_TO_START

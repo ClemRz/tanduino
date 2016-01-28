@@ -1,20 +1,20 @@
 #if VERBOSE_MODE
 
 void displayVectorValues(V vector) {
-  #if VERBOSE_MODE //> 2
+  #if VERBOSE_MODE > 2
   Serial.print("X: "); Serial.print(vector.x); Serial.print("  ");
   Serial.print("Y: "); Serial.print(vector.y); Serial.print("  ");
   Serial.print("Z: "); Serial.print(vector.z); Serial.print("  ");
   #endif  //VERBOSE_MODE
-  #if VERBOSE_MODE //> 1
+  #if VERBOSE_MODE > 1
   if (vector.roll) {
-    Serial.print("roll: "); Serial.print(vector.roll); Serial.print("  ");Serial.print("deg. ");
+    Serial.print("roll: "); Serial.print(vector.roll); Serial.print("  ");
   }
   if (vector.pitch) {
-    Serial.print("pitch: "); Serial.print(vector.pitch); Serial.print("  ");Serial.print("deg. ");
+    Serial.print("pitch: "); Serial.print(vector.pitch); Serial.print("  ");
   }
   if (vector.heading) {
-    Serial.print("heading: "); Serial.print(vector.heading); Serial.print("  ");Serial.print("deg. ");
+    Serial.print("heading: "); Serial.print(vector.heading); Serial.print("  ");
   }
   Serial.println();
   #endif  //VERBOSE_MODE
