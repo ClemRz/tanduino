@@ -8,17 +8,19 @@ void setPCD8544() {
     _PCD8544.print(getError(buffer, ERROR_ADXL345_INIT));
   } else {
     _PCD8544.print(ftoa(buffer, _y_ADXL345.pitch, 1));
+    _PCD8544.print('~'); // Font file updated, ~ matches °
   }
   _PCD8544.println();
   if (_y_HMC5883.failed) {
     _PCD8544.print(getError(buffer, ERROR_HMC5883_INIT));
   } else {
     _PCD8544.print(ftoa(buffer, _y_HMC5883.heading, 1));
-    _PCD8544.print(F("N"));
+    _PCD8544.print(F("~N"));
   }
   _PCD8544.println();
   _PCD8544.setFont(); //TODO verify if we need to setCursor somewhere, including to put that text at the very bottom of the screen
   _PCD8544.print(NAME); _PCD8544.print(F(" V")); _PCD8544.println(REVISION_NR);
+  setBatteryIcon();
   _PCD8544.display();
 }
 
@@ -28,5 +30,30 @@ void setPCD8544Error(String errorMessage) {
   _PCD8544.setCursor(0,12);
   _PCD8544.println(errorMessage);
   _PCD8544.display();
+}
+
+void setBatteryIcon(void) {
+  int
+    w = 14,
+    h = 7,
+    x = PCD8544_WIDTH - 1 - w,
+    y = PCD8544_HEIGHT - 1 - h;
+  switch (getBatteryLevel()) {
+    case 0:
+      _PCD8544.drawBitmap(x, y, bat_0, w, h, 1);
+      break;
+    case 1:
+      _PCD8544.drawBitmap(x, y, bat_1, w, h, 1);
+      break;
+    case 2:
+      _PCD8544.drawBitmap(x, y, bat_2, w, h, 1);
+      break;
+    case 3:
+      _PCD8544.drawBitmap(x, y, bat_3, w, h, 1);
+      break;
+    case 4:
+      _PCD8544.drawBitmap(x, y, bat_4, w, h, 1);
+      break;
+  }
 }
 

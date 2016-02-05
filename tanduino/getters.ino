@@ -12,7 +12,7 @@ V getHMC5883(void) {
 
 void buildReading(int sensorId) {
   buildAverageAndFilteredReading(sensorId);
-  switch(sensorId) {
+  switch (sensorId) {
     case ADXL345:
       _y_ADXL345.pitch = getPitch(_y_ADXL345.x, _y_ADXL345.y, _y_ADXL345.z);
       _y_ADXL345.roll = getRoll(_y_ADXL345.y, _y_ADXL345.z);
@@ -25,7 +25,7 @@ void buildReading(int sensorId) {
 
 void buildAverageAndFilteredReading(int sensorId) {
   V vector = getAverage(sensorId);
-  switch(sensorId) {
+  switch (sensorId) {
     case ADXL345:
       lowPassFilter(&vector, &_y_ADXL345);
       break;
@@ -47,7 +47,7 @@ V getAverage(int sensorId) {
 
 V getVector(int sensorId) {
   V vector;
-  switch(sensorId) {
+  switch (sensorId) {
     case ADXL345:
       vector = getADXL345();
       break;
@@ -110,3 +110,10 @@ char *getError(char* a, uint8_t errorCode) {
   return ret;
 }
 
+int getBatteryLevel(void) {
+  return round(mapD(getOutputVoltage(BATT_OUT), BATT_MIN, BATT_MAX, 0.0, 4.0));
+}
+
+float getOutputVoltage(int pinToRead) {
+  return averageAnalogRead(pinToRead) * 3.3 / averageAnalogRead(REF_3V3); // milivolts
+}

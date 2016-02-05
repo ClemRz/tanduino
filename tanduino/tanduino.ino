@@ -17,8 +17,9 @@
  *    . turn off device (same as previous, but instead of going to sleep if not enough, just toggle hold function)
  *    . hold a measurement
  *    . unhold a measurement
- *  - display the degree sign
- *  - measeure and display the battery level
+ *  - display the degree sign (TBV)
+ *  - inclulde the font file in the repo
+ *  - measure and display the battery level (TBV)
  *  - warn about excessive roll when unhold
  *  - evaluate the battery consumption
  */
@@ -54,6 +55,8 @@ const char* const PROGMEM
   ERROR_MESSAGES[] =          {errmsg_0, errmsg_1, errmsg_2};
 
 // Pins
+#define BATT_OUT              A0              // Battery voltage
+#define REF_3V3               A1              // 3.3V reference sampling
 #define PCD8544_DC_PIN        8               // LCD Data/Command select
 #define PCD8544_RST_PIN       9               // LCD Reset
 #define PCD8544_CE_PIN        10              // LCD Chip Select
@@ -62,8 +65,15 @@ const char* const PROGMEM
 #define ADXL345               1               // Accelerometer's ID
 #define HMC5883               2               // Compass's ID
 #define ALPHA                 0.5             // Low Pass Filter constant
+#define ANALOG_READ_SAMPLES   8.0             // Number of samples to compute analog reading average
+
+// Battery settings
+#define BATT_MIN              3400.0          // Maximum voltage delivered by the battery (millivolts)
+#define BATT_MAX              4000.0          // Maximum voltage delivered by the battery (millivolts)
 
 // Display settings
+#define PCD8544_WIDTH         84              // With of the LCD display (pixels)
+#define PCD8544_HEIGHT        48              // Height of the LCD display (pixels)
 #define PCD8544_TEXT_WRAP     1               // (true, false) wrap the text
 #define PCD8544_CONTRAST      0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
 #define PCD8544_BIAS          0x13            // LCD Bias mode for MUX rate (0x10 to 0x17) (optimum: 0x13, 1:48)

@@ -49,7 +49,7 @@ void displaySensorDetails(sensor_t sensor) {
 
 void displayADXL345DataRate(void) {
   Serial.print("Data Rate:    "); 
-  switch(_ADXL345.getDataRate()) {
+  switch (_ADXL345.getDataRate()) {
     case ADXL345_DATARATE_3200_HZ:
       Serial.print("3200 "); 
       break;
@@ -107,7 +107,7 @@ void displayADXL345DataRate(void) {
 
 void displayADXL345Range(void) {
   Serial.print("Range:         +/- "); 
-  switch(_ADXL345.getRange()) {
+  switch (_ADXL345.getRange()) {
     case ADXL345_RANGE_16_G:
       Serial.print("16 "); 
       break;

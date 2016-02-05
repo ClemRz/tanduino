@@ -14,7 +14,7 @@ float lowPassFiter(float x, float y) {
 }
 
 // Inspired from http://forum.arduino.cc/index.php?topic=44262.0
-char *ftoa(char *a, double f, int places) {
+char *ftoa(char *a, float f, int places) {
   char *ret = a;
   long p = 1;
   for(int i=0; i<places; i++) p *= 10;
@@ -28,5 +28,17 @@ char *ftoa(char *a, double f, int places) {
     ltoa(d, a, 10);
   }
   return ret;
+}
+
+float averageAnalogRead(int pinToRead) {
+  long runningValue = 0; 
+  for(int x=0; x<ANALOG_READ_SAMPLES; x++) runningValue += analogRead(pinToRead);
+  return(runningValue/ANALOG_READ_SAMPLES);
+}
+
+//The Arduino Map function but for floats
+//From: http://forum.arduino.cc/index.php?topic=3922.0
+float mapD(float x, float in_min, float in_max, float out_min, float out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
