@@ -7,11 +7,6 @@ void divideVector(V *a, int scalar) {
 }
 
 void lowPassFilter(V *a, V *y) {
-  for(int i=0; i<3; i++) {
-    if (a->v[i]) {
-      y->v[i] = getLowPassFiteredValue(a->v[i], y->v[i]);
-      a->v[i] = y->v[i];
-    }
-  }
+  for(int i=0; i<3; i++) if (a->v[i]) y->v[i] = lowPassFiter(a->v[i], y->v[i]);
 }
 

@@ -9,6 +9,20 @@
  *  
  */
 
+/**
+ * TODOs:
+ *  - add one buzzer with small chirp on button push and long chirp on power/shut down.
+ *  - add one push button to (http://playground.arduino.cc/Learning/ArduinoSleepCode):
+ *    . turn on device (long push, attach an interrupt to count millis and go back to sleep if not enough)
+ *    . turn off device (same as previous, but instead of going to sleep if not enough, just toggle hold function)
+ *    . hold a measurement
+ *    . unhold a measurement
+ *  - display the degree sign
+ *  - measeure and display the battery level
+ *  - warn about excessive roll when unhold
+ *  - evaluate the battery consumption
+ */
+
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
@@ -29,6 +43,16 @@
 #define HOUR                  (unsigned int) 60L*MINUTE
 #define DAY                   (unsigned long) 24L*HOUR
 
+// Error codes [TBV]
+#define ERROR_ADXL345_INIT    1
+#define ERROR_HMC5883_INIT    2
+const char PROGMEM            //Remember to update the buffer when adding a larger string [10]
+  errmsg_0[] =                "",  //SPARE
+  errmsg_1[] =                "Accel err", //Accelerometer init error
+  errmsg_2[] =                "Comp err"; //Compass init error
+const char* const PROGMEM
+  ERROR_MESSAGES[] =          {errmsg_0, errmsg_1, errmsg_2};
+
 // Pins
 #define PCD8544_DC_PIN        8               // LCD Data/Command select
 #define PCD8544_RST_PIN       9               // LCD Reset
@@ -40,7 +64,6 @@
 #define ALPHA                 0.5             // Low Pass Filter constant
 
 // Display settings
-#define PCD8544_FLIP          1               // (true, false) flip vertically the display
 #define PCD8544_TEXT_WRAP     1               // (true, false) wrap the text
 #define PCD8544_CONTRAST      0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
 #define PCD8544_BIAS          0x13            // LCD Bias mode for MUX rate (0x10 to 0x17) (optimum: 0x13, 1:48)
@@ -50,7 +73,9 @@
 #include FONT_PATH
 
 // Unit-specific configurations
+#define NAME                  F("Tanduino")   // Software/device name
 #define REVISION_NR           F("1.0")        // Revision # of this sketch
+#define FLIP_DISPLAY          1               // (true, false) flip vertically the display
 #define READ_SAMPLES          8               // Number of samples to average on
 #define DISPLAY_REFRESH_RATE  0.175*SEC       // how often display is refreshed (seconds)
 
@@ -59,8 +84,9 @@ Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_C
 Adafruit_ADXL345_Unified _ADXL345 =   Adafruit_ADXL345_Unified(ADXL345);
 Adafruit_HMC5883_Unified mag =        Adafruit_HMC5883_Unified(HMC5883);
 static unsigned long _timer =         -DISPLAY_REFRESH_RATE*MILLISEC;
-V _y_ADXL345 =                        {0, 0, 0, 0, 0, 0};
-V _y_HMC5883 =                        {0, 0, 0, 0, 0, 0};
+V
+  _y_ADXL345 =                        {0, 0, 0, 0, 0, 0, 0},
+  _y_HMC5883 =                        {0, 0, 0, 0, 0, 0, 0};
 
 void setup(void) {
   #if VERBOSE_MODE || WAIT_TO_START
@@ -80,21 +106,14 @@ void setup(void) {
 }
 
 void loop(void) {
-  unsigned long displayRefreshRate = DISPLAY_REFRESH_RATE*MILLISEC;
-  if (millis() - _timer > displayRefreshRate) {
-    V v = getAverageReading(ADXL345);
-    float pitch = v.pitch;
-    float roll = v.roll;
-    #if VERBOSE_MODE
-    Serial.println(pitch);
-    Serial.println(roll);
-    #endif  //VERBOSE_MODE
-    v = getAverageReading(HMC5883);
-    float heading = v.heading;
-    #if VERBOSE_MODE
-    Serial.println(heading);
-    #endif  //VERBOSE_MODE
-    setPCD8544(pitch, heading);
+  if (millis() - _timer > (unsigned long)DISPLAY_REFRESH_RATE*MILLISEC) {
+    if (!_y_ADXL345.failed) {
+      buildReading(ADXL345);
+    }
+    if (!_y_HMC5883.failed) {
+      buildReading(HMC5883);
+    }
+    setPCD8544();
     _timer = millis();
   }
 }

@@ -14,6 +14,7 @@ typedef struct {
             float heading; // Angle between the longitudinal axis (the plane body) and magnetic north, measured clockwise when viewing from the top of the device. 0-359°
         };
     };
+    bool failed;
 } V;
 
 #endif  //_TANDUINO_STRUCTURES_H
