@@ -17,11 +17,9 @@
  *    . turn off device (same as previous, but instead of going to sleep if not enough, just toggle hold function)
  *    . hold a measurement
  *    . unhold a measurement
- *  - display the degree sign (TBV)
- *  - inclulde the font file in the repo
- *  - measure and display the battery level (TBV)
+ *  - display the degree sign
  *  - warn about excessive roll when unhold
- *  - evaluate the battery consumption
+ *  - add vars to calibrate
  */
 
 #include <SPI.h>
