@@ -14,11 +14,11 @@ void buildReading(int sensorId) {
   buildAverageAndFilteredReading(sensorId);
   switch (sensorId) {
     case ADXL345:
-      _y_ADXL345.pitch = getPitch(_y_ADXL345.x, _y_ADXL345.y, _y_ADXL345.z);
       _y_ADXL345.roll = getRoll(_y_ADXL345.y, _y_ADXL345.z);
+      _y_ADXL345.pitch = getPitch(_y_ADXL345.x, _y_ADXL345.y, _y_ADXL345.z, _y_ADXL345.roll);
       break;
     case HMC5883:
-      _y_HMC5883.heading = getHeading(_y_HMC5883.x, _y_HMC5883.y, _y_HMC5883.z, _y_ADXL345.x, _y_ADXL345.y);
+      _y_HMC5883.heading = getHeading(_y_HMC5883.x, _y_HMC5883.y, _y_HMC5883.z, _y_ADXL345.roll, _y_ADXL345.pitch);
       break;
   }
 }
@@ -64,38 +64,32 @@ V getVectorFromSensor(sensors_vec_t sensor) {
   return vector;
 }
 
-float getPitch(float x, float y, float z) {
-  return rad2Deg(atan2(x, sqrt(y*y + z*z)));
+// Inspired from https://github.com/adafruit/Adafruit_AHRS/blob/master/Adafruit_Simple_AHRS.cpp
+float getPitch(float x, float y, float z, float roll) {
+  float pitch;
+  if (z * cos(roll) - y * sin(roll) == 0) {
+    pitch =  x > 0 ? (-M_PI / 2) : (M_PI / 2);
+  } else {
+    pitch = (float)atan(x / (z * cos(roll) - y * sin(roll)));
+  }
+  return pitch;
 }
 
 float getRoll(float y, float z) {
-  return rad2Deg(atan2(-y, z));
+  return -atan2(y, z);
 }
 
-float getHeading(float cX, float cY, float cZ, float aX, float aY) {
-  if (_y_ADXL345.failed) return getNotTiltCompensatedHeading(cX, cY);
-  return getTiltCompensatedHeading(cX, cY, cZ, aX, aY);
+float getHeading(float x, float y, float z, float roll, float pitch) {
+  if (_y_ADXL345.failed) return getNotTiltCompensatedHeading(x, y);
+  return getTiltCompensatedHeading(x, y, z, roll, pitch);
 }
 
-// Inspired from https://github.com/landis/arduino/blob/master/tiltcompass/tiltcompass.pde
-float getTiltCompensatedHeading(float cX, float cY, float cZ, float aX, float aY) {
-  float
-    roll = asin(aY),
-    pitch = asin(aX);
-  // We cannot correct for tilt over 40 degrees with this algorthem
-  if(roll > 0.78 || roll < -0.78 || pitch > 0.78 || pitch < -0.78) return 999.90;
-  float
-    cosRoll = cos(roll),
-    sinRoll = sin(roll),
-    cosPitch = cos(pitch),
-    sinPitch = sin(pitch),
-    hX = cX * cosPitch + cZ * sinPitch,
-    hY = cX * sinRoll * sinPitch + cY * cosRoll - cZ * sinRoll * cosPitch;
-  return correctedRad2Deg(atan2(hY, hX));
+float getTiltCompensatedHeading(float x, float y, float z, float roll, float pitch) {
+  return atan2(z * sin(roll) + y * cos(roll), x * cos(pitch) + y * sin(pitch) * sin(roll) - z * sin(pitch) * cos(roll));
 }
 
 float getNotTiltCompensatedHeading(float x, float y) {
-  return correctedRad2Deg(atan2(y, x));
+  return atan2(y, x);
 }
 
 char *getError(char* a, uint8_t errorCode) {
@@ -115,5 +109,5 @@ int getBatteryLevel(void) {
 }
 
 float getOutputVoltage(int pinToRead) {
-  return averageAnalogRead(pinToRead) * 3.3 / averageAnalogRead(REF_3V3); // milivolts
+  return averageAnalogRead(pinToRead) * 3.3 / averageAnalogRead(REF_3V3); // volts
 }

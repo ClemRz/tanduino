@@ -3,8 +3,10 @@ void initPCD8544(void) {
   #if FLIP_DISPLAY
   _PCD8544.setRotation(2);
   #endif  //FLIP_DISPLAY
-  _PCD8544.display(); //Show splash screen
+  #if SHOW_SPLASH_SCREEN
+  _PCD8544.display();
   delay(1*SEC*MILLISEC);
+  #endif  //SHOW_SPLASH_SCREEN
   #if VERBOSE_MODE
   Serial.println(F("PCD8544 init"));
   #endif  //VERBOSE_MODE
@@ -35,3 +37,9 @@ void initHMC5883(void) {
   displaySensorDetails(sensor);
   #endif  //VERBOSE_MODE
 }
+
+void initBatt(void) {
+  pinMode(BATT_OUT, INPUT);
+  pinMode(REF_3V3, INPUT);
+}
+

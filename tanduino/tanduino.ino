@@ -49,14 +49,14 @@
 #define ERROR_HMC5883_INIT    2
 const char PROGMEM            //Remember to update the buffer when adding a larger string [10]
   errmsg_0[] =                "",  //SPARE
-  errmsg_1[] =                "Accel err", //Accelerometer init error
-  errmsg_2[] =                "Comp err"; //Compass init error
+  errmsg_1[] =                "Ac err", //Accelerometer init error
+  errmsg_2[] =                "Co err"; //Compass init error
 const char* const PROGMEM
   ERROR_MESSAGES[] =          {errmsg_0, errmsg_1, errmsg_2};
 
 // Pins
-#define BATT_OUT              A0              // Battery voltage
-#define REF_3V3               A1              // 3.3V reference sampling
+#define REF_3V3               A0              // 3.3V reference sampling
+#define BATT_OUT              A1              // Battery voltage
 #define PCD8544_DC_PIN        8               // LCD Data/Command select
 #define PCD8544_RST_PIN       9               // LCD Reset
 #define PCD8544_CE_PIN        10              // LCD Chip Select
@@ -68,32 +68,31 @@ const char* const PROGMEM
 #define ANALOG_READ_SAMPLES   8.0             // Number of samples to compute analog reading average
 
 // Battery settings
-#define BATT_MIN              3400.0          // Maximum voltage delivered by the battery (millivolts)
-#define BATT_MAX              4000.0          // Maximum voltage delivered by the battery (millivolts)
+#define BATT_MIN              0.0 //3.4             // Maximum voltage delivered by the battery (volts)
+#define BATT_MAX              3.3 //4.0             // Maximum voltage delivered by the battery (volts)
 
 // Display settings
-#define PCD8544_WIDTH         84              // With of the LCD display (pixels)
-#define PCD8544_HEIGHT        48              // Height of the LCD display (pixels)
 #define PCD8544_TEXT_WRAP     1               // (true, false) wrap the text
 #define PCD8544_CONTRAST      0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
 #define PCD8544_BIAS          0x13            // LCD Bias mode for MUX rate (0x10 to 0x17) (optimum: 0x13, 1:48)
 #define PCD8544_SPI_CLOCK_DIV SPI_CLOCK_DIV2  // Max SPI clock speed for PCD8544 of 2mhz (8mhz / 4)
-#define PCD8544_FONT          FreeSans9pt7b   // LCD font
-#define FONT_PATH             "Fonts/FreeSans9pt7b.h" // See Fonts folder in Adafruit_GFX library
-#include FONT_PATH
 
 // Unit-specific configurations
-#define NAME                  F("Tanduino")   // Software/device name
 #define REVISION_NR           F("1.0")        // Revision # of this sketch
-#define FLIP_DISPLAY          1               // (true, false) flip vertically the display
+#define FLIP_DISPLAY          0               // (true, false) flip vertically the display
+#define SHOW_SPLASH_SCREEN    1               // Show splash screen during initialisation of the device
 #define READ_SAMPLES          8               // Number of samples to average on
 #define DISPLAY_REFRESH_RATE  0.175*SEC       // how often display is refreshed (seconds)
+#define BATT_REFRESH_RATE     5*SEC           // how often battery measurement is refreshed (seconds)
 
 // Global variables
 Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
 Adafruit_ADXL345_Unified _ADXL345 =   Adafruit_ADXL345_Unified(ADXL345);
 Adafruit_HMC5883_Unified mag =        Adafruit_HMC5883_Unified(HMC5883);
-static unsigned long _timer =         -DISPLAY_REFRESH_RATE*MILLISEC;
+static unsigned long
+  _timer =                            -DISPLAY_REFRESH_RATE*MILLISEC,
+  _battTimer =                        -BATT_REFRESH_RATE*MILLISEC;
+int _batt = 0;
 V
   _y_ADXL345 =                        {0, 0, 0, 0, 0, 0, 0},
   _y_HMC5883 =                        {0, 0, 0, 0, 0, 0, 0};
@@ -110,12 +109,17 @@ void setup(void) {
   Serial.println(F("Type any character to start"));
   while (!Serial.available());
   #endif //WAIT_TO_START
+  initBatt();
   initPCD8544();
   initADXL345();
   initHMC5883();
 }
 
 void loop(void) {
+  if (millis() - _battTimer > (unsigned long)BATT_REFRESH_RATE*MILLISEC) {
+    _batt = getBatteryLevel();
+    _battTimer = millis();
+  }
   if (millis() - _timer > (unsigned long)DISPLAY_REFRESH_RATE*MILLISEC) {
     if (!_y_ADXL345.failed) {
       buildReading(ADXL345);

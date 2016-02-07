@@ -1,5 +1,5 @@
 # tanduino
 
-![Tanduino](logo-full.png)
+![Tanduino](bitmaps/logo-full.png)
 
 Tanduino is an Arduino based project aimed to replace the analog "tandem" inclinometer + compass with a digital one.
