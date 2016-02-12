@@ -41,11 +41,6 @@ void initBatt(void) {
   pinMode(REF_3V3, INPUT);
 }
 
-void initBuzzer(void) {
-  pinMode(BUZZER_PIN, OUTPUT);
-  setBuzzer(LONG_CHIRP);
-}
-
 void initButton(void) {
   pinMode(BUTTON_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), isrButton, RISING);

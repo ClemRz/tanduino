@@ -7,19 +7,19 @@ void setPCD8544(void) {
   if (_y_ADXL345.failed) {
     _PCD8544.print(getError(buffer, ERROR_ADXL345_INIT));
   } else {
-    _PCD8544.print(ftoa(buffer, rad2Deg(_y_ADXL345.pitch), 1)); //_PCD8544.print('°');
+    _PCD8544.print(ftoa(buffer, rad2Deg(_y_ADXL345.pitch), 1)); _PCD8544.write(0xF7);
   }
   _PCD8544.println();
   if (_y_HMC5883.failed) {
     _PCD8544.print(getError(buffer, ERROR_HMC5883_INIT));
   } else {
-    _PCD8544.print(ftoa(buffer, correctedRad2Deg(_y_HMC5883.heading), 1)); //_PCD8544.print(F("°N"));
+    _PCD8544.print(ftoa(buffer, correctedRad2Deg(_y_HMC5883.heading), 1)); _PCD8544.write(0xF7); _PCD8544.print('N');
   }
   _PCD8544.println();
   _PCD8544.setTextSize(1);
-  _PCD8544.println(); _PCD8544.print(F(" V")); _PCD8544.print(REVISION_NR);
+  _PCD8544.println(); _PCD8544.print(F("V")); _PCD8544.print(REVISION_NR);
   if (_v_hold) {
-    _PCD8544.print(F("  "));
+    _PCD8544.print(F("   "));
     _PCD8544.setTextColor(WHITE, BLACK);
     _PCD8544.print(F(" H "));
   }
@@ -39,12 +39,12 @@ void setBatteryIcon(void) {
   int
     w = 16,
     h = 8,
-    x = LCDWIDTH - 1 - w,
-    y = LCDHEIGHT - 1 - h;
+    x = LCDWIDTH - w,
+    y = LCDHEIGHT - h;
   switch (_batt) {
     default:
     case 0:
-      if (isEven(getSecond())) _PCD8544.drawBitmap(x, y, bat_0, w, h, 1); // The battery is almost empty, the battery sign flashes each seconds
+      if (millis() % 800 < 400) _PCD8544.drawBitmap(x, y, bat_0, w, h, 1); // The battery is almost empty, the battery sign flashes each seconds
       break;
     case 1:
       _PCD8544.drawBitmap(x, y, bat_1, w, h, 1);
@@ -59,10 +59,6 @@ void setBatteryIcon(void) {
       _PCD8544.drawBitmap(x, y, bat_4, w, h, 1);
       break;
   }
-}
-
-void setBuzzer(unsigned long duration) {
-  tone(BUZZER_PIN, 1760, duration * MILLISEC);
 }
 
 void setLaserStatus(void) {

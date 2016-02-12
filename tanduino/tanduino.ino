@@ -11,14 +11,6 @@
 
 /**
  * TODOs:
- *  - add one buzzer with small chirp on button push and long chirp on power/shut down. (TBV)
- *  - add one push button to (http://playground.arduino.cc/Learning/ArduinoSleepCode): (TBV)
- *    . turn on device (long push, attach an interrupt to count millis and go back to sleep if not enough)
- *    . turn off device (same as previous, but instead of going to sleep if not enough, just toggle hold function)
- *    . hold a measurement
- *    . unhold a measurement
- *  - display the degree sign (TBV)
- *  - add laser driver (TBV)
  *  - warn about excessive roll when unhold
  *  - add vars to calibrate
  */
@@ -59,7 +51,6 @@ const char* const PROGMEM
 #define REF_3V3               A0              // 3.3V reference sampling
 #define BATT_OUT              A1              // Battery voltage
 #define BUTTON_PIN            2               // Interrupt pin
-#define BUZZER_PIN            6               // Buzzer
 #define LASER_PIN             7               // Laser pointer
 #define PCD8544_DC_PIN        8               // LCD Data/Command select
 #define PCD8544_RST_PIN       9               // LCD Reset
@@ -75,16 +66,11 @@ const char* const PROGMEM
 #define BATT_MIN              0.0 //3.4             // Maximum voltage delivered by the battery (volts)
 #define BATT_MAX              3.3 //4.0             // Maximum voltage delivered by the battery (volts)
 
-// Buzzer settings
-#define LONG_CHIRP            1.0*SEC         // Duration of the long chirp (seconds)
-#define SHORT_CHIRP           0.5*SEC         // Duration of the short chirp (seconds)
-
 // Button settings
-#define LONG_PUSH             2*SEC           // Minimum time to wake up or put to sleep the device (seconds)
-#define DEBOUNCE_DELAY        0.5*SEC         // Delay during which we ignore the button actions (seconds)
+#define DEBOUNCE_DELAY        200             // Delay during which we ignore the button actions (milliseconds)
 
 // Display settings
-#define PCD8544_TEXT_WRAP     1               // (true, false) wrap the text
+#define PCD8544_TEXT_WRAP     0               // (true, false) wrap the text
 #define PCD8544_CONTRAST      0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
 #define PCD8544_BIAS          0x13            // LCD Bias mode for MUX rate (0x10 to 0x17) (optimum: 0x13, 1:48)
 #define PCD8544_SPI_CLOCK_DIV SPI_CLOCK_DIV2  // Max SPI clock speed for PCD8544 of 2mhz (8mhz / 4)
@@ -125,7 +111,6 @@ void setup(void) {
   Serial.println(F("Type any character to start"));
   while (!Serial.available());
   #endif //WAIT_TO_START
-  initBuzzer();
   initButton();
   initBatt();
   initPCD8544();
