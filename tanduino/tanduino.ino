@@ -2,7 +2,7 @@
  * Please read license.txt file before redistributing
  * 
  * Hardware:
- *  - Arduino Pro-Mini 3.3V 8MHz
+ *  - ATmega328 3.3V 8MHz
  *  - Triple Axis Digital Compass HMC5883L
  *  - Triple Axis Accelerometer ADXL345
  *  - 84*48 LCD Display PCD8544
@@ -11,17 +11,20 @@
 
 /**
  * TODOs:
- *  - add one buzzer with small chirp on button push and long chirp on power/shut down.
- *  - add one push button to (http://playground.arduino.cc/Learning/ArduinoSleepCode):
+ *  - add one buzzer with small chirp on button push and long chirp on power/shut down. (TBV)
+ *  - add one push button to (http://playground.arduino.cc/Learning/ArduinoSleepCode): (TBV)
  *    . turn on device (long push, attach an interrupt to count millis and go back to sleep if not enough)
  *    . turn off device (same as previous, but instead of going to sleep if not enough, just toggle hold function)
  *    . hold a measurement
  *    . unhold a measurement
- *  - display the degree sign
+ *  - display the degree sign (TBV)
+ *  - add laser driver (TBV)
  *  - warn about excessive roll when unhold
  *  - add vars to calibrate
  */
 
+#include <avr/sleep.h>
+#include <avr/power.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
@@ -55,6 +58,9 @@ const char* const PROGMEM
 // Pins
 #define REF_3V3               A0              // 3.3V reference sampling
 #define BATT_OUT              A1              // Battery voltage
+#define BUTTON_PIN            2               // Interrupt pin
+#define BUZZER_PIN            6               // Buzzer
+#define LASER_PIN             7               // Laser pointer
 #define PCD8544_DC_PIN        8               // LCD Data/Command select
 #define PCD8544_RST_PIN       9               // LCD Reset
 #define PCD8544_CE_PIN        10              // LCD Chip Select
@@ -69,6 +75,14 @@ const char* const PROGMEM
 #define BATT_MIN              0.0 //3.4             // Maximum voltage delivered by the battery (volts)
 #define BATT_MAX              3.3 //4.0             // Maximum voltage delivered by the battery (volts)
 
+// Buzzer settings
+#define LONG_CHIRP            1.0*SEC         // Duration of the long chirp (seconds)
+#define SHORT_CHIRP           0.5*SEC         // Duration of the short chirp (seconds)
+
+// Button settings
+#define LONG_PUSH             2*SEC           // Minimum time to wake up or put to sleep the device (seconds)
+#define DEBOUNCE_DELAY        0.5*SEC         // Delay during which we ignore the button actions (seconds)
+
 // Display settings
 #define PCD8544_TEXT_WRAP     1               // (true, false) wrap the text
 #define PCD8544_CONTRAST      0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
@@ -78,7 +92,6 @@ const char* const PROGMEM
 // Unit-specific configurations
 #define REVISION_NR           F("1.0")        // Revision # of this sketch
 #define FLIP_DISPLAY          0               // (true, false) flip vertically the display
-#define SHOW_SPLASH_SCREEN    1               // Show splash screen during initialisation of the device
 #define READ_SAMPLES          8               // Number of samples to average on
 #define DISPLAY_REFRESH_RATE  0.175*SEC       // how often display is refreshed (seconds)
 #define BATT_REFRESH_RATE     5*SEC           // how often battery measurement is refreshed (seconds)
@@ -91,9 +104,14 @@ static unsigned long
   _timer =                            -DISPLAY_REFRESH_RATE*MILLISEC,
   _battTimer =                        -BATT_REFRESH_RATE*MILLISEC;
 int _batt = 0;
+byte _spiBackup;                              // backup the SPCR value before going to sleep
 V
   _y_ADXL345 =                        {0, 0, 0, 0, 0, 0, 0},
   _y_HMC5883 =                        {0, 0, 0, 0, 0, 0, 0};
+volatile unsigned long
+  _v_buttonMillis =                   0,
+  _v_lastInterruptTime =              0;
+volatile bool _v_hold =               0;
 
 void setup(void) {
   #if VERBOSE_MODE || WAIT_TO_START
@@ -107,10 +125,13 @@ void setup(void) {
   Serial.println(F("Type any character to start"));
   while (!Serial.available());
   #endif //WAIT_TO_START
+  initBuzzer();
+  initButton();
   initBatt();
   initPCD8544();
   initADXL345();
   initHMC5883();
+  initLaser();
 }
 
 void loop(void) {
@@ -119,12 +140,11 @@ void loop(void) {
     _battTimer = millis();
   }
   if (millis() - _timer > (unsigned long)DISPLAY_REFRESH_RATE*MILLISEC) {
-    if (!_y_ADXL345.failed) {
-      buildReading(ADXL345);
+    if (!_v_hold) {
+      if (!_y_ADXL345.failed) buildReading(ADXL345);
+      if (!_y_HMC5883.failed) buildReading(HMC5883);
     }
-    if (!_y_HMC5883.failed) {
-      buildReading(HMC5883);
-    }
+    setLaserStatus();
     setPCD8544();
     _timer = millis();
   }

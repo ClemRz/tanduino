@@ -3,10 +3,8 @@ void initPCD8544(void) {
   #if FLIP_DISPLAY
   _PCD8544.setRotation(2);
   #endif  //FLIP_DISPLAY
-  #if SHOW_SPLASH_SCREEN
   _PCD8544.display();
   delay(1*SEC*MILLISEC);
-  #endif  //SHOW_SPLASH_SCREEN
   #if VERBOSE_MODE
   Serial.println(F("PCD8544 init"));
   #endif  //VERBOSE_MODE
@@ -41,5 +39,19 @@ void initHMC5883(void) {
 void initBatt(void) {
   pinMode(BATT_OUT, INPUT);
   pinMode(REF_3V3, INPUT);
+}
+
+void initBuzzer(void) {
+  pinMode(BUZZER_PIN, OUTPUT);
+  setBuzzer(LONG_CHIRP);
+}
+
+void initButton(void) {
+  pinMode(BUTTON_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), isrButton, RISING);
+}
+
+void initLaser(void) {
+  pinMode(LASER_PIN, OUTPUT);
 }
 

@@ -50,3 +50,19 @@ long getSecond(void) {
   return round(millis() * 0.001);
 }
 
+void enterSleep(void) {
+  _spiBackup = SPCR; //* TODO check if this really saves power
+  SPCR = 0; //* TODO check if this really saves power
+  digitalWrite(13,LOW); //* TODO check if this really saves power
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), isrButtonWakeUp, LOW); //ONLY LOW
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+  sleep_enable();
+  sleep_mode();
+  // The program will continue from here after waking up
+  sleep_disable();
+
+  
+  power_all_enable();
+  SPCR = _spiBackup; //* TODO check if this really saves power
+}
+

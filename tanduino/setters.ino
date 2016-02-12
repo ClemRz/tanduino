@@ -3,20 +3,26 @@ void setPCD8544(void) {
   _PCD8544.clearDisplay();
   _PCD8544.setTextWrap(PCD8544_TEXT_WRAP);
   _PCD8544.setTextSize(2);
+  _PCD8544.setTextColor(BLACK);
   if (_y_ADXL345.failed) {
     _PCD8544.print(getError(buffer, ERROR_ADXL345_INIT));
   } else {
-    _PCD8544.print(ftoa(buffer, rad2Deg(_y_ADXL345.pitch), 1)); _PCD8544.print('°');
+    _PCD8544.print(ftoa(buffer, rad2Deg(_y_ADXL345.pitch), 1)); //_PCD8544.print('°');
   }
   _PCD8544.println();
   if (_y_HMC5883.failed) {
     _PCD8544.print(getError(buffer, ERROR_HMC5883_INIT));
   } else {
-    _PCD8544.print(ftoa(buffer, correctedRad2Deg(_y_HMC5883.heading), 1)); _PCD8544.print(F("°N"));
+    _PCD8544.print(ftoa(buffer, correctedRad2Deg(_y_HMC5883.heading), 1)); //_PCD8544.print(F("°N"));
   }
   _PCD8544.println();
   _PCD8544.setTextSize(1);
-  _PCD8544.println(); _PCD8544.print(F(" V")); _PCD8544.println(REVISION_NR);
+  _PCD8544.println(); _PCD8544.print(F(" V")); _PCD8544.print(REVISION_NR);
+  if (_v_hold) {
+    _PCD8544.print(F("  "));
+    _PCD8544.setTextColor(WHITE, BLACK);
+    _PCD8544.print(F(" H "));
+  }
   setBatteryIcon();
   _PCD8544.display();
 }
@@ -53,5 +59,13 @@ void setBatteryIcon(void) {
       _PCD8544.drawBitmap(x, y, bat_4, w, h, 1);
       break;
   }
+}
+
+void setBuzzer(unsigned long duration) {
+  tone(BUZZER_PIN, 1760, duration * MILLISEC);
+}
+
+void setLaserStatus(void) {
+  digitalWrite(LASER_PIN, _v_hold ? LOW : HIGH);
 }
 
