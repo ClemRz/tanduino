@@ -1,5 +1,5 @@
 void setPCD8544(void) {
-  char buffer[10];
+  char buffer[7];
   _PCD8544.clearDisplay();
   _PCD8544.setTextWrap(PCD8544_TEXT_WRAP);
   _PCD8544.setTextSize(2);

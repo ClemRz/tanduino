@@ -1,6 +1,6 @@
 void initPCD8544(void) {
   _PCD8544.begin(PCD8544_CONTRAST, PCD8544_BIAS);
-  #if FLIP_DISPLAY
+  #if PCD8544_FLIP
   _PCD8544.setRotation(2);
   #endif  //FLIP_DISPLAY
   _PCD8544.display();

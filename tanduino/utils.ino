@@ -32,8 +32,8 @@ char *ftoa(char *a, float f, int places) {
 
 float averageAnalogRead(int pinToRead) {
   long runningValue = 0; 
-  for(int x=0; x<ANALOG_READ_SAMPLES; x++) runningValue += analogRead(pinToRead);
-  return(runningValue/ANALOG_READ_SAMPLES);
+  for(int x=0; x<READ_SAMPLES; x++) runningValue += analogRead(pinToRead);
+  return(runningValue/READ_SAMPLES);
 }
 
 //The Arduino Map function but for floats
