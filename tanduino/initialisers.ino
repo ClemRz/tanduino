@@ -42,8 +42,8 @@ void initBatt(void) {
 }
 
 void initButton(void) {
-  pinMode(BUTTON_PIN, INPUT);
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), isrButton, RISING);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), isrButton, FALLING);
 }
 
 void initLaser(void) {

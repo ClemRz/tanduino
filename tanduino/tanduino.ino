@@ -67,7 +67,7 @@ const char* const PROGMEM
 #define BATT_REFRESH_RATE             5*SEC           // how often battery measurement is refreshed (seconds)
 
 // Button settings        
-#define DEBOUNCE_DELAY                200             // Delay during which we ignore the button actions (milliseconds)
+#define DEBOUNCE_DELAY                50              // Delay during which we ignore the button actions (milliseconds)
 
 // Display settings        
 #define PCD8544_CONTRAST              0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
