@@ -6,7 +6,7 @@
  *  - Triple Axis Digital Compass HMC5883L
  *  - Triple Axis Accelerometer ADXL345
  *  - 84*48 LCD Display PCD8544
- *  
+ *  - 5mW 650nm 3V laser diode
  */
 
 /**
@@ -47,8 +47,8 @@ const char* const PROGMEM
   ERROR_MESSAGES[] =                  {errmsg_0, errmsg_1, errmsg_2};
 
 // Pins        
-#define REF_3V3                       A0              // 3.3V reference sampling
-#define BATT_OUT                      A1              // Battery voltage
+#define REFERENCE_3V3_PIN             A0              // 3.3V reference for sampling
+#define BATTERY_PIN                   A1              // Battery sensing
 #define BUTTON_PIN                    2               // Interrupt pin
 #define LASER_PIN                     7               // Laser pointer
 #define PCD8544_DC_PIN                8               // LCD Data/Command select
@@ -62,16 +62,16 @@ const char* const PROGMEM
 #define READ_SAMPLES                  8.0             // Number of samples to compute reading average
 
 // Battery settings        
-#define BATT_MIN                      9.0             // Maximum voltage delivered by the battery (volts)
-#define BATT_MAX                      8.0             // Maximum voltage delivered by the battery (volts)
+#define BATT_MIN                      8.0             // Minimum voltage delivered by the battery (volts)
+#define BATT_MAX                      9.2             // Maximum voltage delivered by the battery (volts)
+#define BATT_DIVIDER                  1.47/0.47       // Inverse ratio of the voltage divider that gives battery input ( (R1 + Rs) / Rs )
 #define BATT_REFRESH_RATE             5*SEC           // how often battery measurement is refreshed (seconds)
 
 // Button settings        
 #define DEBOUNCE_DELAY                50              // Delay during which we ignore the button actions (milliseconds)
 
 // Display settings        
-#define PCD8544_CONTRAST              0x31            // LCD Contrast value (0x00 to 0x7F) (the higher the value, the higher the contrast)
-#define PCD8544_BIAS                  0x13            // LCD Bias mode for MUX rate (0x10 to 0x17) (optimum: 0x13, 1:48)
+#define PCD8544_CONTRAST              50              // LCD Contrast value
 #define PCD8544_SPI_CLOCK_DIV         SPI_CLOCK_DIV2  // Max SPI clock speed for PCD8544 of 2mhz (8mhz / 4)
 #define PCD8544_REFRESH_RATE          0.175*SEC       // how often display is refreshed (seconds)
 #define PCD8544_TEXT_WRAP             0               // (true, false) wrap the text

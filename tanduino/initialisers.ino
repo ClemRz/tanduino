@@ -1,5 +1,6 @@
 void initPCD8544(void) {
-  _PCD8544.begin(PCD8544_CONTRAST, PCD8544_BIAS);
+  _PCD8544.begin();
+  _PCD8544.setContrast(PCD8544_CONTRAST);
   #if PCD8544_FLIP
   _PCD8544.setRotation(2);
   #endif  //FLIP_DISPLAY
@@ -37,8 +38,8 @@ void initHMC5883(void) {
 }
 
 void initBatt(void) {
-  pinMode(BATT_OUT, INPUT);
-  pinMode(REF_3V3, INPUT);
+  pinMode(BATTERY_PIN, INPUT);
+  pinMode(REFERENCE_3V3_PIN, INPUT);
 }
 
 void initButton(void) {

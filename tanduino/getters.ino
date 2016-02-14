@@ -105,9 +105,9 @@ char *getError(char* a, uint8_t errorCode) {
 }
 
 int getBatteryLevel(void) {
-  return round(mapD(getOutputVoltage(BATT_OUT), BATT_MIN, BATT_MAX, 0.0, 4.0));
+  return round(mapD(getOutputVoltage(BATTERY_PIN)*BATT_DIVIDER, BATT_MIN, BATT_MAX, 0.0, 4.0));
 }
 
 float getOutputVoltage(int pinToRead) {
-  return averageAnalogRead(pinToRead) * 3.3 / averageAnalogRead(REF_3V3); // volts
+  return averageAnalogRead(pinToRead) * 3.3 / averageAnalogRead(REFERENCE_3V3_PIN); // volts
 }
