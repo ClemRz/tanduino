@@ -1,6 +1,34 @@
 /**
- * Please read license.txt file before redistributing
- * 
+Copyright (c) 2016, Clément Ronzon
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of tanduino nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
  * Hardware:
  *  - ATmega328 3.3V 8MHz
  *  - Triple Axis Digital Compass HMC5883L
@@ -62,8 +90,8 @@ const char* const PROGMEM
 #define READ_SAMPLES                  8.0             // Number of samples to compute reading average
 
 // Battery settings        
-#define BATT_MIN                      8.0             // Minimum voltage delivered by the battery (volts)
-#define BATT_MAX                      9.2             // Maximum voltage delivered by the battery (volts)
+#define BATT_MIN                      7.0             // Minimum voltage delivered by the battery (volts)
+#define BATT_MAX                      9.0             // Maximum voltage delivered by the battery (volts)
 #define BATT_DIVIDER                  1.47/0.47       // Inverse ratio of the voltage divider that gives battery input ( (R1 + Rs) / Rs )
 #define BATT_REFRESH_RATE             5*SEC           // how often battery measurement is refreshed (seconds)
 
