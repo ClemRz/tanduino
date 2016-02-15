@@ -20,6 +20,7 @@ Tanduino is an Arduino based project aimed to replace the analog "tandem" inclin
   - hold state: 53mW
   - unhold state: 60mW
 * Laser maximum distance: ?m
+
 *Measured with lowest backlight level at 20ºC.
 
 ## Developer guide
