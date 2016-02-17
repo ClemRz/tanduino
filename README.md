@@ -10,7 +10,11 @@ Tanduino is an Arduino based project aimed to mimic the analog "tandem" inclinom
 * Turn on and off the device with the side on off switch.
 * Push the temporary button to hold unhold the readings.
 * The laser diode is on when unhold, never look at it directly in the eye.
-* Rotated the trimmer resistor with a screwdriver to adjust the backlight level.
+* Rotate the trimmer resistor with a screwdriver to adjust the backlight level.
+
+The compass is tilt compensated by the accelerometer.
+
+The device must be recalibrated each time the hardware design is modified. Particularly if you decide to use a different battery format (4xAA instead of 1x9V).
 
 ## Ratings
 
