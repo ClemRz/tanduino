@@ -34,16 +34,16 @@ void setPCD8544(void) {
   _PCD8544.setTextWrap(PCD8544_TEXT_WRAP);
   _PCD8544.setTextSize(2);
   _PCD8544.setTextColor(BLACK);
-  if (_y_ADXL345.failed) {
+  if (_yADXL345.failed) {
     _PCD8544.print(getError(buffer, ERROR_ADXL345_INIT));
   } else {
-    _PCD8544.print(ftoa(buffer, rad2Deg(_y_ADXL345.pitch), 1)); _PCD8544.write(0xF7);
+    _PCD8544.print(ftoa(buffer, rad2Deg(_yADXL345.pitch), 1)); _PCD8544.write(0xF7);
   }
   _PCD8544.println();
-  if (_y_HMC5883.failed) {
+  if (_yHMC5883.failed) {
     _PCD8544.print(getError(buffer, ERROR_HMC5883_INIT));
   } else {
-    _PCD8544.print(ftoa(buffer, correctedRad2Deg(_y_HMC5883.heading), 1)); _PCD8544.write(0xF7); _PCD8544.print('N');
+    _PCD8544.print(ftoa(buffer, correctedRad2Deg(_yHMC5883.heading), 1)); _PCD8544.write(0xF7); _PCD8544.print('N');
   }
   _PCD8544.println();
   _PCD8544.setTextSize(1);

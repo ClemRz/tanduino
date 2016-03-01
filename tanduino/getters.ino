@@ -28,94 +28,108 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-V getADXL345(void) {
+S getADXL345(void) {
   sensors_event_t event; 
   _ADXL345.getEvent(&event);
-  return getVectorFromSensor(event.acceleration);
+  S sensor = getReadingFromSensor(event.acceleration);
+  multiplySensorWithVector(&sensor, _oADXL345);
+  return sensor;
 }
 
-V getHMC5883(void) {
+S getHMC5883(void) {
   sensors_event_t event; 
   mag.getEvent(&event);
-  return getVectorFromSensor(event.magnetic);
+  S sensor = getReadingFromSensor(event.magnetic);
+  multiplySensorWithVector(&sensor, _oHMC5883);
+  sumSensorWithVector(&sensor, _hiHMC5883);
+  return sensor;
 }
 
 void buildReading(int sensorId) {
   buildAverageAndFilteredReading(sensorId);
   switch (sensorId) {
     case ADXL345:
-      _y_ADXL345.roll = getRoll(_y_ADXL345.y, _y_ADXL345.z);
-      _y_ADXL345.pitch = getPitch(_y_ADXL345.x, _y_ADXL345.y, _y_ADXL345.z, _y_ADXL345.roll);
+      _yADXL345.roll = getRoll(_yADXL345.y, _yADXL345.z);
+      _yADXL345.pitch = getPitch(_yADXL345.x, _yADXL345.y, _yADXL345.z, _yADXL345.roll);
       break;
     case HMC5883:
-      _y_HMC5883.heading = getHeading(_y_HMC5883.x, _y_HMC5883.y, _y_HMC5883.z, _y_ADXL345.roll, _y_ADXL345.pitch);
+      _yHMC5883.heading = getHeading(_yHMC5883.x, _yHMC5883.y, _yHMC5883.z, _yADXL345.roll, _yADXL345.pitch);
       break;
   }
 }
 
 void buildAverageAndFilteredReading(int sensorId) {
-  V vector = getAverage(sensorId);
+  S sensor = getAverage(sensorId);
   switch (sensorId) {
     case ADXL345:
-      lowPassFilter(&vector, &_y_ADXL345);
+      lowPassFilter(&sensor, &_yADXL345);
       break;
     case HMC5883:
-      lowPassFilter(&vector, &_y_HMC5883);
+      lowPassFilter(&sensor, &_yHMC5883);
       break;
   }
 }
 
-V getAverage(int sensorId) {
-  V vector = {0, 0, 0, 0, 0, 0, 0};
+S getAverage(int sensorId) {
+  S sensor = {0, 0, 0, 0, 0, 0, 0};
   for(int i=0; i<READ_SAMPLES; i++) {
-    sumToVector(&vector, getVector(sensorId));
+    sum2Sensors(&sensor, getSensor(sensorId));
     delay(5);
   }
-  divideVector(&vector, READ_SAMPLES);
-  return vector;
+  divideSensor(&sensor, READ_SAMPLES);
+  return sensor;
 }
 
-V getVector(int sensorId) {
-  V vector;
+S getSensor(int sensorId) {
+  S sensor;
   switch (sensorId) {
     case ADXL345:
-      vector = getADXL345();
+      sensor = getADXL345();
       break;
     case HMC5883:
-      vector = getHMC5883();
+      sensor = getHMC5883();
       break;
   }
-  return vector;
+  return sensor;
 }
 
-V getVectorFromSensor(sensors_vec_t sensor) {
-  V vector = {0, 0, 0, 0, 0, 0, 0};
-  for(int i=0; i<3; i++) vector.v[i] = sensor.v[i];
-  return vector;
+S getReadingFromSensor(sensors_vec_t sensor) {
+  S reading = {0, 0, 0, 0, 0, 0, 0};
+  for(int i=0; i<3; i++) reading.floatAt[i] = sensor.v[i];
+  return reading;
 }
 
 // Inspired from https://github.com/adafruit/Adafruit_AHRS/blob/master/Adafruit_Simple_AHRS.cpp
-float getPitch(float x, float y, float z, float roll) {
-  float pitch;
-  if (z * cos(roll) - y * sin(roll) == 0) {
+// and http://cache.freescale.com/files/sensors/doc/app_note/AN4248.pdf
+float getPitch(float x, float y, float z, float roll) {  
+  float pitch, d = y * sin(roll) + z * cos(roll);
+  if (d == 0) {
     pitch =  x > 0 ? (-M_PI / 2) : (M_PI / 2);
   } else {
-    pitch = (float)atan(x / (z * cos(roll) - y * sin(roll)));
+    pitch = (float)atan(-x / d);
   }
+  if (pitch > M_PI / 2) pitch = M_PI - pitch;
+  if (pitch < -M_PI / 2) pitch = -M_PI - pitch;
   return pitch;
 }
 
+// Inspired from http://cache.freescale.com/files/sensors/doc/app_note/AN4248.pdf
 float getRoll(float y, float z) {
-  return -atan2(y, z);
+  return atan2(y, z);
 }
 
 float getHeading(float x, float y, float z, float roll, float pitch) {
-  if (_y_ADXL345.failed) return getNotTiltCompensatedHeading(x, y);
+  if (_yADXL345.failed) return getNotTiltCompensatedHeading(x, y);
   return getTiltCompensatedHeading(x, y, z, roll, pitch);
 }
 
 float getTiltCompensatedHeading(float x, float y, float z, float roll, float pitch) {
-  return atan2(z * sin(roll) + y * cos(roll), x * cos(pitch) + y * sin(pitch) * sin(roll) - z * sin(pitch) * cos(roll));
+  float sinRoll = sin(roll),
+        cosRoll = cos(roll),
+        cosPitch = cos(pitch),
+        nz = y * sinRoll + z * cosRoll;
+  if (cosPitch < 0) cosPitch *= -1;
+  return atan2(nz * sinRoll - y * cosRoll, x * cosPitch + nz * sin(pitch));
 }
 
 float getNotTiltCompensatedHeading(float x, float y) {

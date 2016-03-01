@@ -30,21 +30,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if VERBOSE_MODE
 
-void displayVectorValues(V vector) {
+void displayVectorValues(S sensor) {
   #if VERBOSE_MODE > 2
-  Serial.print("X: "); Serial.print(vector.x); Serial.print("  ");
-  Serial.print("Y: "); Serial.print(vector.y); Serial.print("  ");
-  Serial.print("Z: "); Serial.print(vector.z); Serial.print("  ");
+  Serial.print("X: "); Serial.print(sensor.x); Serial.print("  ");
+  Serial.print("Y: "); Serial.print(sensor.y); Serial.print("  ");
+  Serial.print("Z: "); Serial.print(sensor.z); Serial.print("  ");
   #endif  //VERBOSE_MODE
   #if VERBOSE_MODE > 1
-  if (vector.roll) {
-    Serial.print("roll: "); Serial.print(vector.roll); Serial.print("  ");
+  if (sensor.roll) {
+    Serial.print("roll: "); Serial.print(sensor.roll); Serial.print("  ");
   }
-  if (vector.pitch) {
-    Serial.print("pitch: "); Serial.print(vector.pitch); Serial.print("  ");
+  if (sensor.pitch) {
+    Serial.print("pitch: "); Serial.print(sensor.pitch); Serial.print("  ");
   }
-  if (vector.heading) {
-    Serial.print("heading: "); Serial.print(vector.heading); Serial.print("  ");
+  if (sensor.heading) {
+    Serial.print("heading: "); Serial.print(sensor.heading); Serial.print("  ");
   }
   Serial.println();
   #endif  //VERBOSE_MODE

@@ -28,15 +28,23 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-void sumToVector(V *a, V b) {
-  for(int i=0; i<3; i++) if (b.v[i]) a->v[i] += b.v[i];
+void sum2Sensors(S *a, S b) {
+  for(int i=0; i<3; i++) if (b.floatAt[i]) a->floatAt[i] += b.floatAt[i];
 }
 
-void divideVector(V *a, int scalar) {
-  for(int i=0; i<3; i++) if (a->v[i]) a->v[i] /= scalar;
+void sumSensorWithVector(S *a, V b) {
+  for(int i=0; i<3; i++) if (b.floatAt[i]) a->floatAt[i] += b.floatAt[i];
 }
 
-void lowPassFilter(V *a, V *y) {
-  for(int i=0; i<3; i++) if (a->v[i]) y->v[i] = lowPassFiter(a->v[i], y->v[i]);
+void divideSensor(S *a, int scalar) {
+  for(int i=0; i<3; i++) if (a->floatAt[i]) a->floatAt[i] /= scalar;
+}
+
+void multiplySensorWithVector(S *a, V b) {
+  for(int i=0; i<3; i++) if (a->floatAt[i]) a->floatAt[i] *= b.floatAt[i];
+}
+
+void lowPassFilter(S *a, S *y) {
+  for(int i=0; i<3; i++) if (a->floatAt[i]) y->floatAt[i] = lowPassFiter(a->floatAt[i], y->floatAt[i]);
 }
 

@@ -29,19 +29,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 /**
- * Hardware:
- *  - ATmega328 3.3V 8MHz
- *  - Triple Axis Digital Compass HMC5883L
- *  - Triple Axis Accelerometer ADXL345
- *  - 84*48 LCD Display PCD8544
- *  - 5mW 650nm 3V laser diode
- */
-
-/**
  * TODOs:
  *  - warn about excessive roll when unhold
- *  - add vars to calibrate
- *  - analyse drawn current
+ *  - calibration: http://www.nxp.com/files/sensors/doc/app_note/AN4246.pdf
+ *  - add calibration method to the documentation
+ *  - add a picture of the prototype to the documentation
  */
 
 #include <SPI.h>
@@ -116,9 +108,14 @@ static unsigned long
   _timer =                            -PCD8544_REFRESH_RATE*MILLISEC,
   _battTimer =                        -BATT_REFRESH_RATE*MILLISEC;
 int _batt =                           0;
-V
-  _y_ADXL345 =                        {0, 0, 0, 0, 0, 0, 0},
-  _y_HMC5883 =                        {0, 0, 0, 0, 0, 0, 0};
+S
+  _yADXL345 =                         {0, 0, 0, 0, 0, 0, 0},
+  _yHMC5883 =                         {0, 0, 0, 0, 0, 0, 0};
+const V                                               // Those 2 vectors are used to align the sensors output with the device coordinate system (NED: North, East, Down). Modify it as needed.
+  _oADXL345 =                         {0, -1, -1},
+  _oHMC5883 =                         {0, -1, -1};
+const V
+  _hiHMC5883 =                        {0, 0, 0};      // This vector is used to correct the Hard & Soft Iron effects. Modify it as needed.
 volatile unsigned long
   _v_lastInterruptTime =              0;
 volatile bool _v_hold =               0;
@@ -150,8 +147,8 @@ void loop(void) {
   }
   if (millis() - _timer > (unsigned long)PCD8544_REFRESH_RATE*MILLISEC) {
     if (!_v_hold) {
-      if (!_y_ADXL345.failed) buildReading(ADXL345);
-      if (!_y_HMC5883.failed) buildReading(HMC5883);
+      if (!_yADXL345.failed) buildReading(ADXL345);
+      if (!_yHMC5883.failed) buildReading(HMC5883);
     }
     setLaserStatus();
     setPCD8544();

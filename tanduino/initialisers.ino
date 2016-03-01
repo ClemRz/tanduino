@@ -43,7 +43,7 @@ void initPCD8544(void) {
 
 void initADXL345(void) {
   if(!_ADXL345.begin()) {
-    _y_ADXL345.failed = true;
+    _yADXL345.failed = true;
     return;
   }
   #if VERBOSE_MODE
@@ -57,7 +57,7 @@ void initADXL345(void) {
 
 void initHMC5883(void) {
   if(!mag.begin()) {
-    _y_HMC5883.failed = true;
+    _yHMC5883.failed = true;
     return;
   }
   #if VERBOSE_MODE
