@@ -31,10 +31,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _TANDUINO_STRUCTURES_H
 #define _TANDUINO_STRUCTURES_H
 
-/* struct V is used to return a vector in a common format. */
+/* struct S is used to return a sensor reading in a common format. */
 typedef struct {
     union {
-        float v[6];
+        float floatAt[6];
         struct {
             float x;
             float y;
@@ -45,6 +45,18 @@ typedef struct {
         };
     };
     bool failed;
+} S;
+
+/* struct V is used to return a vector in a common format. */
+typedef struct {
+    union {
+        float floatAt[3];
+        struct {
+            float x;
+            float y;
+            float z;
+        };
+    };
 } V;
 
 #endif  //_TANDUINO_STRUCTURES_H
