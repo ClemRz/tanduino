@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /**
  * TODOs:
  *  - warn about excessive roll when unhold
+ *  - define a Soft Iron calibration 3x3 matrix and the logic for Soft Iron effect correction
  *  - calibration: http://www.nxp.com/files/sensors/doc/app_note/AN4246.pdf
  *  - add calibration method to the documentation
  *  - add a picture of the prototype to the documentation
@@ -100,6 +101,13 @@ const char* const PROGMEM
 // Device settings        
 #define REVISION_NR                   F("1.0")        // Revision # of the design
 
+// Calibration constants
+static const V
+  _oADXL345 =                         {0, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
+  _oHMC5883 =                         {0, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
+  _hiHMC5883 =                        {0, 0, 0};      // {x, y, z} Calibration vector used to correct the Hard Iron effect. Modify it as needed.
+static const float _pitch0 =          0;              // Calibration pitch (rad) used to correct the offset between the horizontal plane and the sensors xy plane. Impact display only. Modify it as needed.
+
 // Global variables
 Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
 Adafruit_ADXL345_Unified _ADXL345 =   Adafruit_ADXL345_Unified(ADXL345);
@@ -111,11 +119,6 @@ int _batt =                           0;
 S
   _yADXL345 =                         {0, 0, 0, 0, 0, 0, 0},
   _yHMC5883 =                         {0, 0, 0, 0, 0, 0, 0};
-const V                                               // Those 2 vectors are used to align the sensors output with the device coordinate system (NED: North, East, Down). Modify it as needed.
-  _oADXL345 =                         {0, -1, -1},
-  _oHMC5883 =                         {0, -1, -1};
-const V
-  _hiHMC5883 =                        {0, 0, 0};      // This vector is used to correct the Hard & Soft Iron effects. Modify it as needed.
 volatile unsigned long
   _v_lastInterruptTime =              0;
 volatile bool _v_hold =               0;
