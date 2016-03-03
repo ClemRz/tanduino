@@ -32,8 +32,8 @@ void sum2Sensors(S *a, S b) {
   for(int i=0; i<3; i++) if (b.floatAt[i]) a->floatAt[i] += b.floatAt[i];
 }
 
-void sumSensorWithVector(S *a, V b) {
-  for(int i=0; i<3; i++) if (b.floatAt[i]) a->floatAt[i] += b.floatAt[i];
+void substractVectorToSensor(S *a, V b) {
+  for(int i=0; i<3; i++) if (b.floatAt[i]) a->floatAt[i] -= b.floatAt[i];
 }
 
 void divideSensor(S *a, int scalar) {
@@ -42,6 +42,12 @@ void divideSensor(S *a, int scalar) {
 
 void multiplySensorWithVector(S *a, V b) {
   for(int i=0; i<3; i++) if (a->floatAt[i]) a->floatAt[i] *= b.floatAt[i];
+}
+
+void multiplySensorWithMatrix(S *a, M m) {
+  V result = {0, 0, 0};
+  for (int i=0; i<3; ++i) for (int j=0; j<3; ++j) result.floatAt[i] += m.floatAt[i+j] * a->floatAt[j];
+  for (int i=0; i<3; ++i) a->floatAt[i] = result.floatAt[i];
 }
 
 void lowPassFilter(S *a, S *y) {

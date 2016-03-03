@@ -59,4 +59,12 @@ typedef struct {
     };
 } V;
 
+/* struct M is used to return a 3x3 matrix in a common format. */
+typedef struct {
+    union {
+        float floatAt[9];
+        float m[3][3];
+    };
+} M;
+
 #endif  //_TANDUINO_STRUCTURES_H

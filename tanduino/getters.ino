@@ -31,18 +31,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 S getADXL345(void) {
   sensors_event_t event; 
   _ADXL345.getEvent(&event);
-  S sensor = getReadingFromSensor(event.acceleration);
-  multiplySensorWithVector(&sensor, _oADXL345);
-  return sensor;
+  return getReadingFromSensor(event.acceleration);
 }
 
 S getHMC5883(void) {
   sensors_event_t event; 
   mag.getEvent(&event);
-  S sensor = getReadingFromSensor(event.magnetic);
-  multiplySensorWithVector(&sensor, _oHMC5883);
-  sumSensorWithVector(&sensor, _hiHMC5883);
-  return sensor;
+  return getReadingFromSensor(event.magnetic);
 }
 
 void buildReading(int sensorId) {
@@ -62,9 +57,11 @@ void buildAverageAndFilteredReading(int sensorId) {
   S sensor = getAverage(sensorId);
   switch (sensorId) {
     case ADXL345:
+      calibarteADXL345(&sensor);
       lowPassFilter(&sensor, &_yADXL345);
       break;
     case HMC5883:
+      calibarteHMC5883(&sensor);
       lowPassFilter(&sensor, &_yHMC5883);
       break;
   }

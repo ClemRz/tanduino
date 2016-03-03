@@ -31,6 +31,12 @@ The device must be recalibrated each time the hardware design is modified. Parti
 
 ### Software design
 
+#### Calibration
+
+After any hardware change (PCB, enclosure, battery etc.), the magnetometer needs to be calibrated. This tutorial is a good start:
+
+[Advanced hard and soft iron magnetometer calibration for dummies](http://diydrones.com/profiles/blogs/advanced-hard-and-soft-iron-magnetometer-calibration-for-dummies "Advanced hard and soft iron magnetometer calibration for dummies")
+
 ...
 
 #### Dependencies

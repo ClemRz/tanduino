@@ -66,6 +66,16 @@ float averageAnalogRead(int pinToRead) {
   return(runningValue/READ_SAMPLES);
 }
 
+void calibarteADXL345(S *sensor) {
+  multiplySensorWithVector(sensor, _orientationADXL345);
+}
+
+void calibarteHMC5883(S *sensor) {
+  multiplySensorWithVector(sensor, _orientationHMC5883);
+  substractVectorToSensor(sensor, _biasHMC5883);
+  multiplySensorWithMatrix(sensor, _matrixHMC5883);
+}
+
 //The Arduino Map function but for floats
 //From: http://forum.arduino.cc/index.php?topic=3922.0
 float mapD(float x, float in_min, float in_max, float out_min, float out_max) {
