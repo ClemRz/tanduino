@@ -73,7 +73,7 @@ void calibarteADXL345(S *sensor) {
 void calibarteHMC5883(S *sensor) {
   multiplySensorWithVector(sensor, _orientationHMC5883);
   substractVectorToSensor(sensor, _biasHMC5883);
-  multiplySensorWithMatrix(sensor, _matrixHMC5883);
+  //multiplySensorWithMatrix(sensor, _matrixHMC5883);
 }
 
 //The Arduino Map function but for floats

@@ -46,7 +46,7 @@ void multiplySensorWithVector(S *a, V b) {
 
 void multiplySensorWithMatrix(S *a, M m) {
   V result = {0, 0, 0};
-  for (int i=0; i<3; ++i) for (int j=0; j<3; ++j) result.floatAt[i] += m.floatAt[i+j] * a->floatAt[j];
+  for (int i=0; i<3; ++i) for (int j=0; j<3; ++j) result.floatAt[i] += m.m[i][j] * a->floatAt[j];
   for (int i=0; i<3; ++i) a->floatAt[i] = result.floatAt[i];
 }
 

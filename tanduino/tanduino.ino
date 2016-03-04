@@ -103,13 +103,13 @@ const char* const PROGMEM
 
 // Calibration constants
 static const V
-  _orientationADXL345 =               {0, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
-  _orientationHMC5883 =               {0, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
+  _orientationADXL345 =               {-1, 1, 1},     // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
+  _orientationHMC5883 =               {1, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
   _biasHMC5883 =                      {0, 0, 0};      // {x, y, z} Calibration vector used to correct the Hard Iron effect. Modify it as needed.
 static const M
-  _matrixHMC5883 =                    {0, 0, 0,        // Calibration matrix used to correct the Soft Iron effect. Modify it as needed.
-                                       0, 0, 0,
-                                       0, 0, 0};
+  _matrixHMC5883 =                    {1, 0, 0,       // Calibration matrix used to correct the Soft Iron effect. Modify it as needed.
+                                       0, 1, 0,
+                                       0, 0, 1};
 static const float _pitch0 =          0;              // Calibration pitch (rad) used to correct the offset between the horizontal plane and the sensors xy plane. Impact display only. Modify it as needed.
 
 // Global variables

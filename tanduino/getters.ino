@@ -126,7 +126,7 @@ float getTiltCompensatedHeading(float x, float y, float z, float roll, float pit
         cosPitch = cos(pitch),
         nz = y * sinRoll + z * cosRoll;
   if (cosPitch < 0) cosPitch *= -1;
-  return atan2(nz * sinRoll - y * cosRoll, x * cosPitch + nz * sin(pitch));
+  return atan2(z * sinRoll - y * cosRoll, x * cosPitch + nz * sin(pitch));
 }
 
 float getNotTiltCompensatedHeading(float x, float y) {
