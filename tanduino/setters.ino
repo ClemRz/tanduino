@@ -29,11 +29,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 void setPCD8544(void) {
-  char buffer[7];
   _PCD8544.clearDisplay();
   _PCD8544.setTextWrap(PCD8544_TEXT_WRAP);
-  _PCD8544.setTextSize(2);
   _PCD8544.setTextColor(BLACK);
+  if (_v_calibrate) {
+    setCalibrationDisplay();
+  } else {
+    setNormalDisplay();
+  }
+  if (_v_hold) {
+    _PCD8544.print(F("   "));
+    _PCD8544.setTextColor(WHITE, BLACK);
+    _PCD8544.print(F(" H "));
+  }
+  if (!_v_calibrate) setBatteryIcon();
+  _PCD8544.display();
+}
+
+void setNormalDisplay(void) {
+  char buffer[7];
+  _PCD8544.setTextSize(2);
   if (_yADXL345.failed) {
     _PCD8544.print(getError(buffer, ERROR_ADXL345_INIT));
   } else {
@@ -48,13 +63,18 @@ void setPCD8544(void) {
   _PCD8544.println();
   _PCD8544.setTextSize(1);
   _PCD8544.println(); _PCD8544.print(F("V")); _PCD8544.print(REVISION_NR);
-  if (_v_hold) {
-    _PCD8544.print(F("   "));
-    _PCD8544.setTextColor(WHITE, BLACK);
-    _PCD8544.print(F(" H "));
-  }
-  setBatteryIcon();
-  _PCD8544.display();
+}
+
+void setCalibrationDisplay(void) {
+  _PCD8544.print(F("Ax: ")); _PCD8544.print(_yADXL345.x);
+  _PCD8544.print(F("Ay: ")); _PCD8544.print(_yADXL345.y);
+  _PCD8544.print(F("Az: ")); _PCD8544.print(_yADXL345.z);
+  _PCD8544.println();
+  _PCD8544.print(F("Mx: ")); _PCD8544.print(_yHMC5883.x);
+  _PCD8544.print(F("My: ")); _PCD8544.print(_yHMC5883.y);
+  _PCD8544.print(F("Mz: ")); _PCD8544.print(_yHMC5883.z);
+  _PCD8544.println();
+  _PCD8544.print(getBatteryVoltage()); _PCD8544.print(F("V"));
 }
 
 void setPCD8544Error(String errorMessage) {
@@ -74,7 +94,7 @@ void setBatteryIcon(void) {
   switch (_batt) {
     default:
     case 0:
-      if (millis() % 800 < 400) _PCD8544.drawBitmap(x, y, bat_0, w, h, 1); // The battery is almost empty, the battery sign flashes each seconds
+      if (millis() % 800 < 400) _PCD8544.drawBitmap(x, y, bat_0, w, h, 1); // The battery is almost empty, the battery sign flashes
       break;
     case 1:
       _PCD8544.drawBitmap(x, y, bat_1, w, h, 1);

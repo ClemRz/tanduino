@@ -90,6 +90,7 @@ const char* const PROGMEM
 
 // Button settings        
 #define DEBOUNCE_DELAY                50              // Delay during which we ignore the button actions (milliseconds)
+#define LONG_PUSH_DELAY               4*SEC           // Delay to detect a long push versus a short push (seconds)
 
 // Display settings        
 #define PCD8544_CONTRAST              50              // LCD Contrast value
@@ -124,8 +125,13 @@ S
   _yADXL345 =                         {0, 0, 0, 0, 0, 0, 0},
   _yHMC5883 =                         {0, 0, 0, 0, 0, 0, 0};
 volatile unsigned long
-  _v_lastInterruptTime =              0;
-volatile bool _v_hold =               0;
+  _v_lastInterruptTime =              0,
+  _v_lowTime =                        0,
+  _v_highTime =                       0;
+volatile bool
+  _v_hold =                           0,
+  _v_calibrate =                      0,
+  _v_buttonState =                    1;
 
 void setup(void) {
   #if VERBOSE_MODE || WAIT_TO_START

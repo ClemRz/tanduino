@@ -146,7 +146,11 @@ char *getError(char* a, uint8_t errorCode) {
 }
 
 int getBatteryLevel(void) {
-  return round(mapD(getOutputVoltage(BATTERY_PIN)*BATT_DIVIDER, BATT_MIN, BATT_MAX, 0.0, 4.0));
+  return round(mapD(getBatteryVoltage(), BATT_MIN, BATT_MAX, 0.0, 4.0));
+}
+
+float getBatteryVoltage(void) {
+  return getOutputVoltage(BATTERY_PIN)*BATT_DIVIDER;
 }
 
 float getOutputVoltage(int pinToRead) {
