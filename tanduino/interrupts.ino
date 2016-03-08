@@ -34,14 +34,8 @@ void isrButton(void) {
       _v_lowTime = millis();
       _v_buttonState = false;
     } else if(!_v_buttonState) {
-      _v_highTime = millis();
-      if(_v_highTime - _v_lowTime > (unsigned long)LONG_PUSH_DELAY*MILLISEC) {
-        _v_calibrate = !_v_calibrate;
-        _v_buttonState = true;
-      } else {
-        _v_hold = !_v_hold;
-        _v_buttonState = true;
-      }
+      _v_hold = !_v_hold;
+      _v_buttonState = true;
     }
   }
   _v_lastInterruptTime = millis();

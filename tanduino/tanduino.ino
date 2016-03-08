@@ -90,7 +90,7 @@ const char* const PROGMEM
 
 // Button settings        
 #define DEBOUNCE_DELAY                50              // Delay during which we ignore the button actions (milliseconds)
-#define LONG_PUSH_DELAY               4*SEC           // Delay to detect a long push versus a short push (seconds)
+#define LONG_PUSH_DELAY               1*SEC           // Delay to detect a long push versus a short push (seconds)
 
 // Display settings        
 #define PCD8544_CONTRAST              50              // LCD Contrast value
@@ -121,16 +121,15 @@ static unsigned long
   _timer =                            -PCD8544_REFRESH_RATE*MILLISEC,
   _battTimer =                        -BATT_REFRESH_RATE*MILLISEC;
 int _batt =                           0;
+bool _calibrate =                     0;
 S
   _yADXL345 =                         {0, 0, 0, 0, 0, 0, 0},
   _yHMC5883 =                         {0, 0, 0, 0, 0, 0, 0};
 volatile unsigned long
   _v_lastInterruptTime =              0,
-  _v_lowTime =                        0,
-  _v_highTime =                       0;
+  _v_lowTime =                        0;
 volatile bool
   _v_hold =                           0,
-  _v_calibrate =                      0,
   _v_buttonState =                    1;
 
 void setup(void) {
@@ -154,6 +153,10 @@ void setup(void) {
 }
 
 void loop(void) {
+  if(!_v_buttonState && millis() - _v_lowTime > (unsigned long)LONG_PUSH_DELAY*MILLISEC) {
+    _v_buttonState = true;
+    _calibrate = !_calibrate;
+  }
   if (millis() - _battTimer > (unsigned long)BATT_REFRESH_RATE*MILLISEC) {
     _batt = getBatteryLevel();
     _battTimer = millis();

@@ -32,7 +32,7 @@ void setPCD8544(void) {
   _PCD8544.clearDisplay();
   _PCD8544.setTextWrap(PCD8544_TEXT_WRAP);
   _PCD8544.setTextColor(BLACK);
-  if (_v_calibrate) {
+  if (_calibrate) {
     setCalibrationDisplay();
   } else {
     setNormalDisplay();
@@ -42,7 +42,7 @@ void setPCD8544(void) {
     _PCD8544.setTextColor(WHITE, BLACK);
     _PCD8544.print(F(" H "));
   }
-  if (!_v_calibrate) setBatteryIcon();
+  if (!_calibrate) setBatteryIcon();
   _PCD8544.display();
 }
 
@@ -66,23 +66,18 @@ void setNormalDisplay(void) {
 }
 
 void setCalibrationDisplay(void) {
-  _PCD8544.print(F("Ax: ")); _PCD8544.print(_yADXL345.x);
-  _PCD8544.print(F("Ay: ")); _PCD8544.print(_yADXL345.y);
-  _PCD8544.print(F("Az: ")); _PCD8544.print(_yADXL345.z);
+  char buffer[7];
+  _PCD8544.setCursor(15,0); _PCD8544.println(F("Acc"));
+  _PCD8544.setCursor(55,0); _PCD8544.println(F("Mag"));
+  _PCD8544.print(F("X ")); _PCD8544.println(_yADXL345.x);
+  _PCD8544.print(F("Y ")); _PCD8544.println(_yADXL345.y);
+  _PCD8544.print(F("Z ")); _PCD8544.print(_yADXL345.z);
+  _PCD8544.setCursor(48,8); _PCD8544.print(_yHMC5883.x);
+  _PCD8544.setCursor(48,16); _PCD8544.print(_yHMC5883.y);
+  _PCD8544.setCursor(48,24); _PCD8544.print(_yHMC5883.z);
   _PCD8544.println();
-  _PCD8544.print(F("Mx: ")); _PCD8544.print(_yHMC5883.x);
-  _PCD8544.print(F("My: ")); _PCD8544.print(_yHMC5883.y);
-  _PCD8544.print(F("Mz: ")); _PCD8544.print(_yHMC5883.z);
   _PCD8544.println();
-  _PCD8544.print(getBatteryVoltage()); _PCD8544.print(F("V"));
-}
-
-void setPCD8544Error(String errorMessage) {
-  _PCD8544.clearDisplay();
-  _PCD8544.setTextWrap(PCD8544_TEXT_WRAP);
-  _PCD8544.setCursor(0,12);
-  _PCD8544.println(errorMessage);
-  _PCD8544.display();
+  _PCD8544.print(F("Batt ")); _PCD8544.print(getBatteryVoltage()); _PCD8544.print(F("V"));
 }
 
 void setBatteryIcon(void) {
