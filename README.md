@@ -9,6 +9,7 @@ Tanduino is an Arduino based project aimed to mimic the analog "tandem" inclinom
 * Power the device with a DC 3.3V to 9V battery.
 * Turn on and off the device with the side on off switch.
 * Push the temporary button to hold unhold the readings.
+* Maintain the temporary button pushed during more than 1s to enter in raw mode (for calibration purposes).
 * The laser diode is on when unhold, never look at it directly in the eye.
 * Rotate the trimmer resistor with a screwdriver to adjust the backlight level.
 
