@@ -65,3 +65,5 @@ After any hardware change (PCB, enclosure, battery etc.), the magnetometer needs
 * 470kΩ and 1MΩ resistors to divide battery voltage sensing
 * 10kΩ trimmer resistor to adjust display's backlight
 * LT1521 3.3V 300mA voltage regulator and 1µF electrolitic capacitor
+* Piezo buzzer/speaker
+* autotransformer (boost piezo voltage)
