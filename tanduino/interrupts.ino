@@ -33,6 +33,7 @@ void isrButton(void) {
     if(digitalRead(BUTTON_PIN) == LOW) {
       _v_lowTime = millis();
       _v_buttonState = false;
+      shortChirp();
     } else if(!_v_buttonState) {
       _v_hold = !_v_hold;
       _v_buttonState = true;

@@ -30,8 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /**
  * TODOs:
- *  - warn about excessive roll when unhold
- *  - define a Soft Iron calibration 3x3 matrix and the logic for Soft Iron effect correction
  *  - calibration: http://www.nxp.com/files/sensors/doc/app_note/AN4246.pdf
  *  - add calibration method to the documentation
  *  - add a picture of the prototype to the documentation
@@ -71,6 +69,7 @@ const char* const PROGMEM
 #define REFERENCE_3V3_PIN             A0              // 3.3V reference for sampling
 #define BATTERY_PIN                   A1              // Battery sensing
 #define BUTTON_PIN                    2               // Interrupt pin
+#define PIEZO_PIN                     3               // Piezo speaker/buzzer pin
 #define LASER_PIN                     7               // Laser pointer
 #define PCD8544_DC_PIN                8               // LCD Data/Command select
 #define PCD8544_RST_PIN               9               // LCD Reset
@@ -91,6 +90,11 @@ const char* const PROGMEM
 // Button settings        
 #define DEBOUNCE_DELAY                50              // Delay during which we ignore the button actions (milliseconds)
 #define LONG_PUSH_DELAY               1*SEC           // Delay to detect a long push versus a short push (seconds)
+
+// Buzzer settings
+#define FREQUENCY                     2600            // Sound frequency (hertz)
+#define SHORT_CHIRP                   300             // Length of the short chirp (milliseconds)
+#define LONG_CHIRP                    1000            // Length of the long chirp (milliseconds)
 
 // Display settings        
 #define PCD8544_CONTRAST              50              // LCD Contrast value
@@ -149,6 +153,7 @@ void setup(void) {
   initPCD8544();
   initADXL345();
   initHMC5883();
+  initBuzzer();
   initLaser();
 }
 
@@ -156,6 +161,7 @@ void loop(void) {
   if(!_v_buttonState && millis() - _v_lowTime > (unsigned long)LONG_PUSH_DELAY*MILLISEC) {
     _v_buttonState = true;
     _calibrate = !_calibrate;
+    longChirp();
   }
   if (millis() - _battTimer > (unsigned long)BATT_REFRESH_RATE*MILLISEC) {
     _batt = getBatteryLevel();

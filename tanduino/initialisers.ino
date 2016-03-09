@@ -77,6 +77,11 @@ void initButton(void) {
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), isrButton, CHANGE);
 }
 
+void initBuzzer(void) {
+  pinMode(PIEZO_PIN, OUTPUT);
+  longChirp();
+}
+
 void initLaser(void) {
   pinMode(LASER_PIN, OUTPUT);
 }

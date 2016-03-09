@@ -81,3 +81,27 @@ void calibarteHMC5883(S *sensor) {
 float mapD(float x, float in_min, float in_max, float out_min, float out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+void shortChirp() {
+  chirp(SHORT_CHIRP);
+}
+
+void longChirp() {
+  chirp(LONG_CHIRP);
+}
+
+void chirp(int duration) {
+  pwmWave(PIEZO_PIN, FREQUENCY, duration);
+}
+
+void pwmWave(int pin, int frequency, int duration) {
+  unsigned long t = millis();
+  bool flag = true;
+  int ms = round(1000000 / (2 * frequency));
+  while (millis() - t < duration) {
+    digitalWrite(pin, flag ? HIGH : LOW);
+    flag = !flag;
+    delayMicroseconds(ms);
+  }
+}
+
