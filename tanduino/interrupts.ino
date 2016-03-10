@@ -32,10 +32,11 @@ void isrButton(void) {
   if (millis() - _v_lastInterruptTime > (unsigned long)DEBOUNCE_DELAY) {
     if(digitalRead(BUTTON_PIN) == LOW) {
       _v_lowTime = millis();
-      _v_buttonState = false;
-    } else if(!_v_buttonState) {
+      _v_buttonState = LOW;
+      _v_buttonPushed = true;
+    } else if(_v_buttonState == LOW) {
       _v_hold = !_v_hold;
-      _v_buttonState = true;
+      _v_buttonState = HIGH;
     }
   }
   _v_lastInterruptTime = millis();

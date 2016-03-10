@@ -33,6 +33,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  - calibration: http://www.nxp.com/files/sensors/doc/app_note/AN4246.pdf
  *  - add calibration method to the documentation
  *  - add a picture of the prototype to the documentation
+ *  - find a way to save power consumption on hold (shut down sensors etc.)
+ *  - chage the laser resistor
+ * laser must be fed with 3V 25mA. Original power source was 4.5V so the original resistor might be 60K (TBV).
+ * If the power source is 3.3V then the resistor must provide a drop of 0.3V at 25mA with lead to a 12K resistor (TBV).
  */
 
 #include <SPI.h>
@@ -93,8 +97,8 @@ const char* const PROGMEM
 
 // Buzzer settings
 #define FREQUENCY                     2600            // Sound frequency (hertz)
-#define SHORT_CHIRP                   150             // Length of the short chirp (milliseconds)
-#define LONG_CHIRP                    500             // Length of the long chirp (milliseconds)
+#define SHORT_CHIRP                   50              // Length of the short chirp (milliseconds)
+#define LONG_CHIRP                    250             // Length of the long chirp (milliseconds)
 
 // Display settings        
 #define PCD8544_CONTRAST              50              // LCD Contrast value
@@ -134,7 +138,9 @@ volatile unsigned long
   _v_lowTime =                        0;
 volatile bool
   _v_hold =                           0,
-  _v_buttonState =                    1;
+  _v_buttonPushed =                   0;
+volatile uint8_t
+  _v_buttonState =                    HIGH;
 
 void setup(void) {
   #if VERBOSE_MODE || WAIT_TO_START
@@ -148,22 +154,24 @@ void setup(void) {
   Serial.println(F("Type any character to start"));
   while (!Serial.available());
   #endif //WAIT_TO_START
+  initBuzzer();
   initButton();
   initBatt();
   initPCD8544();
   initADXL345();
   initHMC5883();
-  initBuzzer();
   initLaser();
 }
 
 void loop(void) {
-  if(!_v_buttonState) {
-    if(millis() - _v_lowTime > (unsigned long)LONG_PUSH_DELAY*MILLISEC) {
-      _v_buttonState = true;
-      _calibrate = !_calibrate;
-      longChirp();
-    } else shortChirp();
+  if(_v_buttonState == LOW && millis() - _v_lowTime > (unsigned long)LONG_PUSH_DELAY*MILLISEC) {
+    _v_buttonState = HIGH;
+    _calibrate = !_calibrate;
+    longChirp();
+  }
+  if (_v_buttonPushed) {
+    shortChirp();
+    _v_buttonPushed = false;
   }
   if (millis() - _battTimer > (unsigned long)BATT_REFRESH_RATE*MILLISEC) {
     _batt = getBatteryLevel();
