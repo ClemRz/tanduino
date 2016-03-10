@@ -32,8 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TODOs:
  *  - calibration: http://www.nxp.com/files/sensors/doc/app_note/AN4246.pdf
  *  - add calibration method to the documentation
+ *  - create a calibration sketch
  *  - add a picture of the prototype to the documentation
- *  - find a way to save power consumption on hold (shut down sensors etc.)
  *  - chage the laser resistor
  * laser must be fed with 3V 25mA. Original power source was 4.5V so the original resistor might be 60K (TBV).
  * If the power source is 3.3V then the resistor must provide a drop of 0.3V at 25mA with lead to a 12K resistor (TBV).
@@ -79,9 +79,13 @@ const char* const PROGMEM
 #define PCD8544_RST_PIN               9               // LCD Reset
 #define PCD8544_CE_PIN                10              // LCD Chip Select
 
-// Sensors settings        
+// Sensors settings
 #define ADXL345                       1               // Accelerometer's ID
+#define ADXL345_MEASURE               0x08            // Value to put POWER_CTL register to measurement value
+#define ADXL345_STANDBY               0x00            // Value to put POWER_CTL register to standby value
 #define HMC5883                       2               // Compass's ID
+#define HMC5883_MEASURE               0x00            // Value to put MR register to continuous measurement value
+#define HMC5883_IDLE                  0x02            // Value to put MR register to idle value
 #define ALPHA                         0.5             // Low Pass Filter constant
 #define READ_SAMPLES                  8.0             // Number of samples to compute reading average
 
@@ -129,7 +133,8 @@ static unsigned long
   _timer =                            -PCD8544_REFRESH_RATE*MILLISEC,
   _battTimer =                        -BATT_REFRESH_RATE*MILLISEC;
 int _batt =                           0;
-bool _calibrate =                     0;
+bool _calibrate =                     0,
+     _standby =                       0;
 S
   _yADXL345 =                         {0, 0, 0, 0, 0, 0, 0},
   _yHMC5883 =                         {0, 0, 0, 0, 0, 0, 0};
@@ -173,6 +178,7 @@ void loop(void) {
     shortChirp();
     _v_buttonPushed = false;
   }
+  toogleSensors(_v_hold);
   if (millis() - _battTimer > (unsigned long)BATT_REFRESH_RATE*MILLISEC) {
     _batt = getBatteryLevel();
     _battTimer = millis();

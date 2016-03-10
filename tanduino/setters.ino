@@ -110,3 +110,19 @@ void setLaserStatus(void) {
   digitalWrite(LASER_PIN, _v_hold ? LOW : HIGH);
 }
 
+void setADXL345ToStandbyMode(void) {
+  _ADXL345.writeRegister(ADXL345_REG_POWER_CTL, ADXL345_STANDBY);
+}
+
+void setADXL345ToMeasureMode(void) {
+  _ADXL345.writeRegister(ADXL345_REG_POWER_CTL, ADXL345_MEASURE);
+}
+
+void setHMC5883ToStandbyMode(void) {
+  write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, HMC5883_IDLE);
+}
+
+void setHMC5883ToMeasureMode(void) {
+  write8(HMC5883_ADDRESS_MAG, HMC5883_REGISTER_MAG_MR_REG_M, HMC5883_MEASURE);
+}
+

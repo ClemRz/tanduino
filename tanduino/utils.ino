@@ -106,3 +106,23 @@ void pwmWave(int pin, int frequency, int duration) {
   digitalWrite(pin, LOW);
 }
 
+void toogleSensors(bool standby) {
+  if (standby != _standby) {
+    if (standby) {
+      setADXL345ToStandbyMode();
+      setHMC5883ToStandbyMode();
+    } else {
+      setADXL345ToMeasureMode();
+      setHMC5883ToMeasureMode();
+    }
+    _standby = standby;
+  }
+}
+
+void write8(byte address, byte reg, byte value) {
+  Wire.beginTransmission(address);
+  Wire.write((uint8_t)reg);
+  Wire.write((uint8_t)value);
+  Wire.endTransmission();
+}
+
