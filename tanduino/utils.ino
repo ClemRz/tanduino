@@ -103,5 +103,6 @@ void pwmWave(int pin, int frequency, int duration) {
     flag = !flag;
     delayMicroseconds(ms);
   }
+  digitalWrite(pin, LOW);
 }
 

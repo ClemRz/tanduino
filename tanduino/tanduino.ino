@@ -93,8 +93,8 @@ const char* const PROGMEM
 
 // Buzzer settings
 #define FREQUENCY                     2600            // Sound frequency (hertz)
-#define SHORT_CHIRP                   300             // Length of the short chirp (milliseconds)
-#define LONG_CHIRP                    1000            // Length of the long chirp (milliseconds)
+#define SHORT_CHIRP                   150             // Length of the short chirp (milliseconds)
+#define LONG_CHIRP                    500             // Length of the long chirp (milliseconds)
 
 // Display settings        
 #define PCD8544_CONTRAST              50              // LCD Contrast value
@@ -158,10 +158,12 @@ void setup(void) {
 }
 
 void loop(void) {
-  if(!_v_buttonState && millis() - _v_lowTime > (unsigned long)LONG_PUSH_DELAY*MILLISEC) {
-    _v_buttonState = true;
-    _calibrate = !_calibrate;
-    longChirp();
+  if(!_v_buttonState) {
+    if(millis() - _v_lowTime > (unsigned long)LONG_PUSH_DELAY*MILLISEC) {
+      _v_buttonState = true;
+      _calibrate = !_calibrate;
+      longChirp();
+    } else shortChirp();
   }
   if (millis() - _battTimer > (unsigned long)BATT_REFRESH_RATE*MILLISEC) {
     _batt = getBatteryLevel();
