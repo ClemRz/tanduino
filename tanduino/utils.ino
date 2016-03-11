@@ -45,11 +45,13 @@ float lowPassFiter(float x, float y) {
 
 // Inspired from http://forum.arduino.cc/index.php?topic=44262.0
 char *ftoa(char *a, float f, int places) {
+  bool neg = f < 0;
   char *ret = a;
   long p = 1;
   for(int i=0; i<places; i++) p *= 10;
   f = round(f * p) / (float)p;
   long l = f;
+  if (neg && l >= 0) *a++ = '-';
   ltoa(l, a, 10);
   if (places) {
     while (*a != '\0') a++;
