@@ -52,7 +52,7 @@ void setNormalDisplay(void) {
   if (_yADXL345.failed) {
     _PCD8544.print(getError(buffer, ERROR_ADXL345_INIT));
   } else {
-    _PCD8544.print(ftoa(buffer, rad2Deg(_yADXL345.pitch - _pitch0), 1)); _PCD8544.write(0xF7);
+    _PCD8544.print(ftoa(buffer, rad2Deg(_yADXL345.pitch - PITCH_0), 1)); _PCD8544.write(0xF7);
   }
   _PCD8544.println();
   if (_yHMC5883.failed) {

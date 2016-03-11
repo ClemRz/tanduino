@@ -34,9 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *  - add calibration method to the documentation
  *  - create a calibration sketch
  *  - add a picture of the prototype to the documentation
- *  - chage the laser resistor
- * laser must be fed with 3V 25mA. Original power source was 4.5V so the original resistor might be 60K (TBV).
- * If the power source is 3.3V then the resistor must provide a drop of 0.3V at 25mA with lead to a 12K resistor (TBV).
  */
 
 #include <SPI.h>
@@ -100,7 +97,7 @@ const char* const PROGMEM
 #define LONG_PUSH_DELAY               1*SEC           // Delay to detect a long push versus a short push (seconds)
 
 // Buzzer settings
-#define FREQUENCY                     2600            // Sound frequency (hertz)
+#define FREQUENCY                     4100            // Sound frequency (hertz)
 #define SHORT_CHIRP                   50              // Length of the short chirp (milliseconds)
 #define LONG_CHIRP                    250             // Length of the long chirp (milliseconds)
 
@@ -109,12 +106,12 @@ const char* const PROGMEM
 #define PCD8544_SPI_CLOCK_DIV         SPI_CLOCK_DIV2  // Max SPI clock speed for PCD8544 of 2mhz (8mhz / 4)
 #define PCD8544_REFRESH_RATE          0.175*SEC       // how often display is refreshed (seconds)
 #define PCD8544_TEXT_WRAP             0               // (true, false) wrap the text
-#define PCD8544_FLIP                  0               // (true, false) flip vertically the display
+#define PCD8544_FLIP                  1               // (true, false) flip vertically the display
 
 // Device settings        
 #define REVISION_NR                   F("1.0")        // Revision # of the design
 
-// Calibration constants
+// Calibration settings
 static const V
   _orientationADXL345 =               {-1, 1, 1},     // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
   _orientationHMC5883 =               {1, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
@@ -123,7 +120,7 @@ static const M
   _matrixHMC5883 =                    {1, 0, 0,       // Calibration matrix used to correct the Soft Iron effect. Modify it as needed.
                                        0, 1, 0,
                                        0, 0, 1};
-static const float _pitch0 =          0;              // Calibration pitch (rad) used to correct the offset between the horizontal plane and the sensors xy plane. Impact display only. Modify it as needed.
+#define PITCH_0                       0.0942478       // Calibration pitch (rad) used to correct the offset between the horizontal plane and the sensors xy plane. Impact display only. Modify it as needed.
 
 // Global variables
 Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
