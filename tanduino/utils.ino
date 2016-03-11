@@ -128,3 +128,7 @@ void write8(byte address, byte reg, byte value) {
   Wire.endTransmission();
 }
 
+void printHMC5883(void) {
+  Serial.print(_yHMC5883.x); Serial.print(F(",")); Serial.print(_yHMC5883.y); Serial.print(F(",")); Serial.println(_yHMC5883.z);
+}
+

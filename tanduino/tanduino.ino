@@ -108,10 +108,12 @@ const char* const PROGMEM
 #define PCD8544_TEXT_WRAP             0               // (true, false) wrap the text
 #define PCD8544_FLIP                  1               // (true, false) flip vertically the display
 
-// Device settings        
+// Device settings
 #define REVISION_NR                   F("1.0")        // Revision # of the design
 
 // Calibration settings
+#define BAUD                          9600            // Serial communication baud for debug and calibration purposes
+#define PITCH_0                       0.0942478       // Calibration pitch (rad) used to correct the offset between the horizontal plane and the sensors xy plane. Impact display only. Modify it as needed.
 static const V
   _orientationADXL345 =               {-1, 1, 1},     // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
   _orientationHMC5883 =               {1, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
@@ -120,7 +122,6 @@ static const M
   _matrixHMC5883 =                    {1, 0, 0,       // Calibration matrix used to correct the Soft Iron effect. Modify it as needed.
                                        0, 1, 0,
                                        0, 0, 1};
-#define PITCH_0                       0.0942478       // Calibration pitch (rad) used to correct the offset between the horizontal plane and the sensors xy plane. Impact display only. Modify it as needed.
 
 // Global variables
 Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
@@ -131,7 +132,8 @@ static unsigned long
   _battTimer =                        -BATT_REFRESH_RATE*MILLISEC;
 int _batt =                           0;
 bool _calibrate =                     0,
-     _standby =                       0;
+     _standby =                       0,
+     _serial =                        0;
 S
   _yADXL345 =                         {0, 0, 0, 0, 0, 0, 0},
   _yHMC5883 =                         {0, 0, 0, 0, 0, 0, 0};
@@ -145,10 +147,7 @@ volatile uint8_t
   _v_buttonState =                    HIGH;
 
 void setup(void) {
-  #if VERBOSE_MODE || WAIT_TO_START
-  Serial.begin(115200);
-  Serial.println();
-  #endif  //VERBOSE_MODE || WAIT_TO_START
+  initSerial();
   #if VERBOSE_MODE
   displaySketchInfo();
   #endif  //VERBOSE_MODE
@@ -170,6 +169,7 @@ void loop(void) {
     _v_buttonState = HIGH;
     _calibrate = !_calibrate;
     longChirp();
+    initSerial();
   }
   if (_v_buttonPushed) {
     shortChirp();
@@ -183,7 +183,10 @@ void loop(void) {
   if (millis() - _timer > (unsigned long)PCD8544_REFRESH_RATE*MILLISEC) {
     if (!_v_hold) {
       if (!_yADXL345.failed) buildReading(ADXL345);
-      if (!_yHMC5883.failed) buildReading(HMC5883);
+      if (!_yHMC5883.failed) {
+        buildReading(HMC5883);
+        if (_calibrate) printHMC5883();
+      }
     }
     setLaserStatus();
     setPCD8544();

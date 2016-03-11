@@ -86,3 +86,15 @@ void initLaser(void) {
   pinMode(LASER_PIN, OUTPUT);
 }
 
+void initSerial(void) {
+  bool serial = VERBOSE_MODE || WAIT_TO_START || _calibrate;
+  if (_serial != serial) {
+    if (serial) {
+      Serial.begin(BAUD);
+    } else {
+      Serial.end();
+    }
+    _serial = serial;
+  }
+}
+
