@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * TODOs:
  *  - calibration: http://www.nxp.com/files/sensors/doc/app_note/AN4246.pdf
  *  - add calibration method to the documentation
- *  - create a calibration sketch
  *  - add a picture of the prototype to the documentation
  */
 
@@ -117,11 +116,11 @@ const char* const PROGMEM
 static const V
   _orientationADXL345 =               {-1, 1, 1},     // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
   _orientationHMC5883 =               {1, -1, -1},    // {x, y, z} Configuration vector to align the sensor output with the device coordinate system (NED: North, East, Down). Modify it as needed.
-  _biasHMC5883 =                      {0, 0, 0};      // {x, y, z} Calibration vector used to correct the Hard Iron effect. Modify it as needed.
+  _biasHMC5883 =                      {18.95, 7.244, 5.401};  // {x, y, z} Calibration vector used to correct the Hard Iron effect. Modify it as needed.
 static const M
-  _matrixHMC5883 =                    {1, 0, 0,       // Calibration matrix used to correct the Soft Iron effect. Modify it as needed.
-                                       0, 1, 0,
-                                       0, 0, 1};
+  _matrixHMC5883 =                    {1.442, -0.062, -0.053, // Calibration matrix used to correct the Soft Iron effect. Modify it as needed.
+                                       -0.032, 1.497, 0.055,
+                                       -0.117, 0.052, 1.554};
 
 // Global variables
 Adafruit_PCD8544 _PCD8544 =           Adafruit_PCD8544(PCD8544_DC_PIN, PCD8544_CE_PIN, PCD8544_RST_PIN);
