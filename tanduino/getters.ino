@@ -40,7 +40,7 @@ S getHMC5883(void) {
   return getReadingFromSensor(event.magnetic);
 }
 
-void buildReading(int sensorId) {
+void buildSensorReading(int sensorId) {
   buildAverageAndFilteredReading(sensorId);
   switch (sensorId) {
     case ADXL345:
@@ -51,6 +51,10 @@ void buildReading(int sensorId) {
       _yHMC5883.heading = getHeading(_yHMC5883.x, _yHMC5883.y, _yHMC5883.z, _yADXL345.roll, _yADXL345.pitch);
       break;
   }
+}
+
+void buildBatteryReading(void) {
+  _batt = getBatteryLevel();
 }
 
 void buildAverageAndFilteredReading(int sensorId) {
@@ -155,4 +159,13 @@ float getBatteryVoltage(void) {
 
 float getOutputVoltage(int pinToRead) {
   return averageAnalogRead(pinToRead) * 3.3 / averageAnalogRead(REFERENCE_3V3_PIN); // volts
+}
+
+bool isStabilized(void) {
+  if (!_circularLooped) return false;
+  if (stddev(_circularPitch, CAPTURING_SAMPLES) >= MAXIMUM_DEVIATION) return false;
+  if (stddev(_circularHeading, CAPTURING_SAMPLES) >= MAXIMUM_DEVIATION) return false;
+  _yADXL345.pitch = mean(_circularPitch, CAPTURING_SAMPLES);
+  _yHMC5883.heading = mean(_circularHeading, CAPTURING_SAMPLES);
+  return true;
 }

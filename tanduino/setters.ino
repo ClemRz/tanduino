@@ -37,7 +37,7 @@ void setPCD8544(void) {
   } else {
     setNormalDisplay();
   }
-  if (_v_hold) {
+  if (_hold) {
     _PCD8544.print(F("   "));
     _PCD8544.setTextColor(WHITE, BLACK);
     _PCD8544.print(F(" H "));
@@ -66,7 +66,6 @@ void setNormalDisplay(void) {
 }
 
 void setCalibrationDisplay(void) {
-  char buffer[7];
   _PCD8544.setCursor(15,0); _PCD8544.println(F("Acc"));
   _PCD8544.setCursor(55,0); _PCD8544.println(F("Mag"));
   _PCD8544.print(F("X ")); _PCD8544.println(_yADXL345.x);
@@ -107,7 +106,7 @@ void setBatteryIcon(void) {
 }
 
 void setLaserStatus(void) {
-  digitalWrite(LASER_PIN, _v_hold ? LOW : HIGH);
+  digitalWrite(LASER_PIN, _hold ? LOW : HIGH);
 }
 
 void setADXL345ToStandbyMode(void) {

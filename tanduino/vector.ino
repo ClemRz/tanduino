@@ -51,6 +51,6 @@ void multiplySensorWithMatrix(S *a, M m) {
 }
 
 void lowPassFilter(S *a, S *y) {
-  for(int i=0; i<3; i++) if (a->floatAt[i]) y->floatAt[i] = lowPassFiter(a->floatAt[i], y->floatAt[i]);
+  for(int i=0; i<3; i++) if (a->floatAt[i]) y->floatAt[i] = lowPassFilter(a->floatAt[i], y->floatAt[i]);
 }
 

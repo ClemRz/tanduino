@@ -39,7 +39,7 @@ float rad2Deg(float rad) {
 }
 
 // Inspired from http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/
-float lowPassFiter(float x, float y) {
+float lowPassFilter(float x, float y) {
   return x * ALPHA + (y * (1.0 - ALPHA));
 }
 
@@ -84,11 +84,11 @@ float mapD(float x, float in_min, float in_max, float out_min, float out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-void shortChirp() {
+void shortChirp(void) {
   chirp(SHORT_CHIRP);
 }
 
-void longChirp() {
+void longChirp(void) {
   chirp(LONG_CHIRP);
 }
 
@@ -108,19 +108,6 @@ void pwmWave(int pin, int frequency, int duration) {
   digitalWrite(pin, LOW);
 }
 
-void toogleSensors(bool standby) {
-  if (standby != _standby) {
-    if (standby) {
-      setADXL345ToStandbyMode();
-      setHMC5883ToStandbyMode();
-    } else {
-      setADXL345ToMeasureMode();
-      setHMC5883ToMeasureMode();
-    }
-    _standby = standby;
-  }
-}
-
 void write8(byte address, byte reg, byte value) {
   Wire.beginTransmission(address);
   Wire.write((uint8_t)reg);
@@ -129,6 +116,36 @@ void write8(byte address, byte reg, byte value) {
 }
 
 void printHMC5883(void) {
-  Serial.print(_yHMC5883.x); Serial.print(F(",")); Serial.print(_yHMC5883.y); Serial.print(F(",")); Serial.println(_yHMC5883.z);
+  if (_calibrate && !_hold && !_yHMC5883.failed) Serial.print(_yHMC5883.x); Serial.print(F(",")); Serial.print(_yHMC5883.y); Serial.print(F(",")); Serial.println(_yHMC5883.z);
+}
+
+void consolidateCircularArrays(void) {
+  if (_circularIndex >= CAPTURING_SAMPLES) {
+    _circularLooped = true;
+    _circularIndex = 0;
+  } else _circularLooped = false;
+  _circularPitch[_circularIndex] = _yADXL345.pitch;
+  _circularHeading[_circularIndex] = _yHMC5883.heading;
+  _circularIndex++;
+}
+
+float mean(float *a, int count) {
+  float sum;
+  if (count == 0) return 0;
+  sum = 0;
+  for(int i=0; i<count; i++) sum += a[i];
+  return sum / count;
+}
+
+float stddev(float *a, int count) {
+  float sum, theta, meanValue;
+  if (count == 0) return 0;
+  sum = 0;
+  meanValue = mean(a, count);
+  for(int i=0; i<count; i++) {
+    theta = meanValue - a[i];
+    sum += theta * theta;
+  }
+  return sqrt(sum/(float)count);
 }
 

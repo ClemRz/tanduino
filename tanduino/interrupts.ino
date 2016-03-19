@@ -33,9 +33,9 @@ void isrButton(void) {
     if(digitalRead(BUTTON_PIN) == LOW) {
       _v_lowTime = millis();
       _v_buttonState = LOW;
-      _v_buttonPushed = true;
     } else if(_v_buttonState == LOW) {
-      _v_hold = !_v_hold;
+      _v_toggle = true;
+      _v_stabilizationTimer = millis();
       _v_buttonState = HIGH;
     }
   }
