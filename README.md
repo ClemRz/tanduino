@@ -7,24 +7,23 @@ Tanduino is an Arduino based project aimed to mimic the analog "tandem" inclinom
 ## User guide
 
 * Power the device with a DC 3.3V to 9V battery.
-* Turn on and off the device with the side on off switch.
-* Push the temporary button to hold unhold the readings.
-* Maintain the temporary button pushed during more than 1s to enter in raw mode (for calibration purposes).
-* The laser diode is on when unhold, never look at it directly in the eye.
+* Turn on and off the device with the rocking switch.
+* Push the temporary button to start the capturing procedure, you will hear a short chirp, hold the device as stable as possible. A second short chirp will be emitted once satisfactory values are read and the laser will go off. If you hear a long chirp push the temporary button again and try to hold the device more steadily.
+* Maintain the temporary button pushed during more than 2s to enter in raw mode (for calibration purposes).
+* When the laser diode is on don't look at it directly in the eye.
 * Rotate the trimmer resistor with a screwdriver to adjust the backlight level.
 
 The compass is tilt compensated by the accelerometer.
 
-The device must be recalibrated each time the hardware design is modified. Particularly if you decide to use a different battery format (4xAA instead of 1x9V).
+The device must be recalibrated each time the hardware design is modified. Particularly if you decide to use a different battery format (4xAA instead of 1x9V for instance).
 
 ## Ratings
 
-* Heading precision: 0.1º
-* Pitch precision: 0.1º
+* Heading precision: ±0.1º
+* Pitch precision: ±0.1º
 * Power consumption*:
-  - hold state: 53mW
-  - unhold state: 60mW
-* Laser maximum distance: ?m
+  - hold state: 47mW
+  - unhold state: 283mW
 
 *Measured with lowest backlight level at 20ºC.
 
