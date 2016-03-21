@@ -64,6 +64,7 @@ After any hardware change (PCB, enclosure, battery etc.), the magnetometer needs
 * 10kΩ resistor and 100nF ceramic capacitor for push button debouncing
 * 470kΩ and 1MΩ resistors to divide battery voltage sensing
 * 10kΩ trimmer resistor to adjust display's backlight
+* 10Ω trimmer resistor to adjust laser power
 * LT1521 3.3V 300mA voltage regulator and 1µF electrolitic capacitor
 * Piezo flat speaker
 * Autotransformer (boost piezo voltage)
